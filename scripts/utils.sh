@@ -46,3 +46,35 @@ getCurrentOSType() {
             } ;;
     esac
 }
+
+update_repository() {
+    name=$1
+    target_dir=$2
+
+    warning "Repository $name already exists, updating..."
+        cd $target_dir
+        git checkout master
+        git branch backup-branch
+        git fetch --all
+        git reset --hard origin/main
+}
+
+install_repository_pkg() {
+    pkg_name=$1
+    target_dir=$2
+    git_url=$3
+
+    printf "\n"
+    info "===================="
+    if [ -d $target_dir ]; then
+        info "Update $pkg_name"
+        update_repository $pkg_name $target_dir
+        success "$pkg_name updated"
+        info "===================="
+    else
+        info "Install $pkg_name..."
+        git clone --depth 1 $git_url $target_dir
+        success "$pkg_name installed"
+        info "===================="
+    fi
+}
