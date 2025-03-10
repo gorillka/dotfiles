@@ -1,0 +1,6 @@
+.DS_Store
+.env
+wezterm/*.jpg
+wezterm/*.png
+work.zsh
+karabiner/automatic_backups/*.*
