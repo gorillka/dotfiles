@@ -52,11 +52,12 @@ update_repository() {
     target_dir=$2
 
     warning "Repository $name already exists, updating..."
-        cd $target_dir
-        git checkout master
-        git branch backup-branch
-        git fetch --all
-        git reset --hard origin/main
+    cd $target_dir
+    git checkout master
+    git branch backup-branch
+    git fetch --all
+    git reset --hard origin/main
+    git pull
 }
 
 install_repository_pkg() {
@@ -76,5 +77,14 @@ install_repository_pkg() {
         git clone --depth 1 $git_url $target_dir
         success "$pkg_name installed"
         info "===================="
+    fi
+}
+
+sudo_checkers() {
+    if [ $USER = "root" ]; then
+        $1
+    else
+        sudo --validate
+        sudo $1
     fi
 }

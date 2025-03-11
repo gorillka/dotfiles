@@ -140,7 +140,8 @@ cloning_repository() {
         git checkout master
         git branch backup-branch
         git fetch --all
-        git reset --hard origin/main
+        git reset --hard origin/master
+        git pull
     fi
 
     info "========================================"
@@ -153,18 +154,7 @@ run_bootstrap_script() {
     "${target_dir}/scripts/bootstrap.sh"
 }
 
-update_symlinks() {
-    printf "\n"
-    info "===================="
-    info "Symbolic Links"
-    info "===================="
-
-    ./scripts/symlinks.sh --delete --include-files
-    ./scripts/symlinks.sh --create
-}
-
 check_os_type
 install_prerequisites
 cloning_repository
 run_bootstrap_script
-# update_symlinks
