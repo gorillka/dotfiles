@@ -150,7 +150,7 @@ cloning_repository() {
 }
 
 run_bootstrap_script() {
-    chmod +x "${target_dir}/scripts/bootstrap.sh"
+    chmod +x "${target_dir}/**/*.sh"
     "${target_dir}/scripts/bootstrap.sh"
 }
 
