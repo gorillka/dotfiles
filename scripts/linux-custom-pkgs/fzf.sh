@@ -10,3 +10,4 @@ target_dir=$HOME/.$pkg_name
 git_url="https://github.com/junegunn/fzf.git"
 
 install_repository_pkg $pkg_name $target_dir $git_url
+$HOME/.fzf/install --no-key-bindings --no-completion --no-update-rc --no-zsh

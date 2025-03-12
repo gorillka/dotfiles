@@ -38,7 +38,8 @@ install_custom_packages() {
 }
 
 post_install_linux() {
-    sudo_checkers "ln -s /usr/bin/batcat /usr/bin/bat"
+    sudo_checkers "ln -s /usr/bin/batcat /usr/local/bat"
+    sudo_checkers "ln -s /usr/bin/fdfind /usr/local/fd"
 }
 
 clear() {
