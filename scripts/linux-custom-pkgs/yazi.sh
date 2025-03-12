@@ -29,6 +29,7 @@ install_yazi() {
 
 clear_yazi() {
     sudo_checkers "rm -rf $target_dir"
+    rustup self uninstall -y
     sudo_checkers "apt remove -y gcc make"
 }
 

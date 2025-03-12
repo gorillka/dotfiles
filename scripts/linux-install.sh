@@ -38,6 +38,10 @@ install_custom_packages() {
     info "===================="
 }
 
+post_install_linux() {
+    sudo_checkers "ln -s /usr/bin/batcat /usr/bin/bat"
+}
+
 clear() {
     sudo_checkers "apt -y autoremove"
     sudo_checkers "apt -y autoclean"
@@ -46,5 +50,6 @@ clear() {
 if [ "$(basename "$0")" = "$(basename "${BASH_SOURCE[0]}")" ]; then
     install_dependents
     install_custom_packages
+    post_install
     clear
 fi
