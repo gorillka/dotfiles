@@ -47,6 +47,7 @@ update_symlinks() {
     info "Symbolic Links"
     info "===================="
 
+    cd "$HOME/.dotfiles"
     chmod +x $SCRIPT_DIR/symlinks.sh
     $SCRIPT_DIR/symlinks.sh --delete --include-files
     $SCRIPT_DIR/symlinks.sh --create

@@ -7,8 +7,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 update_eza_packages() {
     info "Updating Linux packages..."
     sudo_checkers "mkdir -p /etc/apt/keyrings"
+    sudo_checkers "rm -rf /etc/apt/keyrings/gierens.gpg"
     wget -qO /tmp/deb.asc https://raw.githubusercontent.com/eza-community/eza/main/deb.asc
-    sudo_checkers "gpg --dearmor -oy /etc/apt/keyrings/gierens.gpg /tmp/deb.asc"
+    sudo_checkers "gpg --dearmor -o /etc/apt/keyrings/gierens.gpg /tmp/deb.asc"
     echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" > /tmp/gierens.list
     sudo_checkers "mv /tmp/gierens.list /etc/apt/sources.list.d/gierens.list"
     sudo_checkers "chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list"
