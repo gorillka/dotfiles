@@ -25,6 +25,9 @@ eval "$(zoxide init zsh)"
 # fzf
 # ------------------------------------------------------------------------------
 # Set up fzf key bindings and fuzzy completion
+if [[ -d $HOME/.fzf/bin]] && [[ ! "$PATH" == */root/.fzf/bin* ]]; then
+    PATH="${PATH:+${PATH}:}/root/.fzf/bin"
+fi
 source <(fzf --zsh)
 eval "$(fzf --zsh)"
 

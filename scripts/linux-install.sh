@@ -30,7 +30,6 @@ install_custom_packages() {
     info "Install custom packages..."
     info "===================="
     for script in $SCRIPT_DIR/linux-custom-pkgs/*.sh; do
-        chmod +x $script
         $script
     done
     info "===================="
@@ -50,6 +49,6 @@ clear() {
 if [ "$(basename "$0")" = "$(basename "${BASH_SOURCE[0]}")" ]; then
     install_dependents
     install_custom_packages
-    post_install
+    post_install_linux
     clear
 fi
