@@ -37,6 +37,14 @@ cask "karabiner-elements"
 # Open-source code editor
 cask "visual-studio-code"
 
+brew "yazi"
+brew "ffmpeg"
+brew "sevenzip"
+brew "jq"
+brew "poppler"
+brew "ripgrep"
+brew "imagemagick"
+
 # Ambitious Vim-fork focused on extensibility and agility
 # brew "neovim"
 
