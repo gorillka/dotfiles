@@ -2,9 +2,9 @@ tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "homebrew/core"
 
-cask "xcodes"
-cask "jordanbaird-ice"
-cask "fork"
+# cask "xcodes"
+# cask "jordanbaird-ice"
+# cask "fork"
 cask "ghostty"
 brew "mas"
 
