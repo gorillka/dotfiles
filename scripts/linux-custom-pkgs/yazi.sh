@@ -11,31 +11,45 @@ target_dir=/tmp/$pkg_name
 update_yazi_packages() {
     info "Updating Linux packages..."
     sudo_checkers "apt install -y gcc make ffmpeg 7zip jq poppler-utils ripgrep imagemagick"
+    success "Success"
 }
 
 setup_rust() {
     info "Setup Rust toolchain..."
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    success "Success"
 }
 
 install_yazi() {
-    info "Install yazi..."
+    info "Install $pkg_name..."
     git clone https://github.com/sxyazi/yazi.git $target_dir
     cd $target_dir
     export PATH="$HOME/.cargo/bin:$PATH"
     cargo build --release --locked
     sudo_checkers "mv target/release/yazi target/release/ya /usr/local/bin/"
+    success "$pkg_name installed"
 }
 
-clear_yazi() {
+clean_yazi() {
+    info "Cleaning $pkg_name..."
     sudo_checkers "rm -rf $target_dir"
     rustup self uninstall -y
     sudo_checkers "apt remove -y gcc make"
+    success "Cleaned"
 }
 
 if [ "$(basename "$0")" = "$(basename "${BASH_SOURCE[0]}")" ]; then
-    update_yazi_packages
-    setup_rust
-    install_yazi
-    clear_yazi
+    printf "\n"
+    info "===================="
+    case $1 in
+        -c|--clean)
+            clean_yazi
+            ;;
+        *)
+            update_yazi_packages
+            setup_rust
+            install_yazi
+            ;;
+    esac
+    info "===================="
 fi

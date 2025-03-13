@@ -23,5 +23,10 @@ install_lazygit() {
 }
 
 if [ "$(basename "$0")" = "$(basename "${BASH_SOURCE[0]}")" ]; then
+    printf "\n"
+    info "===================="
+    info "Installing $pkg_name..."
     install_lazygit
+    success "$pkg_name installed"
+    info "===================="
 fi

@@ -106,7 +106,7 @@ debian_prerequisites() {
 install_prerequisites() {
     printf "\n"
     info "========================================"
-    info "Install prerequisites..."
+    info "Install prerequisites for $osType..."
     info "========================================"
 
     case $osType in
@@ -122,7 +122,7 @@ install_prerequisites() {
     esac
 
     info "========================================"
-    success "Prerequisites installed"
+    success "Prerequisites for $osType installed"
     info "========================================"
 }
 
@@ -138,7 +138,6 @@ cloning_repository() {
         warning "Repository dotfiles already exists, updating..."
         cd $target_dir
         git checkout master
-        git branch backup-branch
         git fetch --all
         git reset --hard origin/master
         git pull
@@ -150,7 +149,6 @@ cloning_repository() {
 }
 
 run_bootstrap_script() {
-    chmod +x "${target_dir}/**/*.sh"
     "${target_dir}/scripts/bootstrap.sh"
 }
 

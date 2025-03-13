@@ -5,17 +5,22 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 . $SCRIPT_DIR/utils.sh
 
-install_bootstrap_pkg() {
+run_bootstrap_scripts() {
+    printf "\n"
+    info "========================================"
+    info "Install bootstrap packages..."
+    info "========================================"
     for script in $SCRIPT_DIR/bootstrap/*.sh; do
         if [ -f $script ]; then
-            chmod +x $script
-            $script
+            $script $1
         fi
     done
+    info "========================================"
+    success "Bootstrap packages installed"
+    info "========================================"
 }
 
 install_linux_pkgs() {
-    chmod +x $SCRIPT_DIR/linux-install.sh
     $SCRIPT_DIR/linux-install.sh
 }
 
@@ -24,6 +29,11 @@ install_osx_pkgs() {
 }
 
 install_os_specific_pkgs() {
+    osType=$(getCurrentOSType)
+    printf "\n"
+    info "========================================"
+    info "Install packages for $osType..."
+    info "========================================"
     case $(getCurrentOSType) in
         "OSX")
             install_osx_pkgs
@@ -34,11 +44,9 @@ install_os_specific_pkgs() {
         *)
             ;;
     esac
-}
-
-post_install() {
-    chsh -s $(which zsh)
-    exec zsh
+    info "========================================"
+    success "Packages for $osType installed"
+    info "========================================"
 }
 
 update_symlinks() {
@@ -48,14 +56,39 @@ update_symlinks() {
     info "===================="
 
     cd "$HOME/.dotfiles"
-    chmod +x $SCRIPT_DIR/symlinks.sh
     $SCRIPT_DIR/symlinks.sh --delete --include-files
     $SCRIPT_DIR/symlinks.sh --create
+
+    info "===================="
+    success "Symbolic Links updated"
+    info "===================="
+}
+
+bootstrap_clean() {
+    printf "\n"
+    info "===================="
+    info "Cleaning..."
+    info "===================="
+    run_bootstrap_scripts -c
+    info "===================="
+    success "Cleaned"
+    info "===================="
+}
+
+post_install() {
+    chsh -s $(which zsh)
+    exec zsh
 }
 
 if [ "$(basename "$0")" = "$(basename "${BASH_SOURCE[0]}")" ]; then
-    install_bootstrap_pkg
+    run_bootstrap_script
     install_os_specific_pkgs
     update_symlinks
+    bootstrap_clean
+
+    info "===================="
+    success "All installed"
+    info "===================="
+
     post_install
 fi

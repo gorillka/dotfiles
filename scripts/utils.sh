@@ -68,16 +68,15 @@ install_repository_pkg() {
     printf "\n"
     info "===================="
     if [ -d $target_dir ]; then
-        info "Update $pkg_name"
+        info "Update $pkg_name..."
         update_repository $pkg_name $target_dir
         success "$pkg_name updated"
-        info "===================="
     else
         info "Install $pkg_name..."
         git clone --depth 1 $git_url $target_dir
         success "$pkg_name installed"
-        info "===================="
     fi
+    info "===================="
 }
 
 sudo_checkers() {

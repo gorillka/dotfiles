@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 . $SCRIPT_DIR/utils.sh
 
-install_dependents() {
+install_linux_dependents() {
     printf "\n"
     info "===================="
     info "Install dependent packages..."
@@ -24,32 +24,37 @@ install_dependents() {
     info "===================="
 }
 
-install_custom_packages() {
+run_linux_custom_scripts() {
+    for script in $SCRIPT_DIR/linux-custom-pkgs/*.sh; do
+        $script $1
+    done
+}
+
+install_linux_custom_packages() {
     printf "\n"
     info "===================="
     info "Install custom packages..."
     info "===================="
-    for script in $SCRIPT_DIR/linux-custom-pkgs/*.sh; do
-        $script
-    done
+    run_linux_custom_scripts
     info "===================="
     success "Custom packages installed..."
     info "===================="
 }
 
 post_install_linux() {
-    sudo_checkers "ln -s /usr/bin/batcat /usr/local/bat"
-    sudo_checkers "ln -s /usr/bin/fdfind /usr/local/fd"
+    sudo_checkers "ln -s /usr/bin/batcat /usr/local/bin/bat"
+    sudo_checkers "ln -s /usr/lib/cargo/bin/fd /usr/local/bin/fd"
 }
 
-clear() {
+linux_clear() {
+    run_linux_custom_scripts "-c"
     sudo_checkers "apt -y autoremove"
     sudo_checkers "apt -y autoclean"
 }
 
 if [ "$(basename "$0")" = "$(basename "${BASH_SOURCE[0]}")" ]; then
-    install_dependents
-    install_custom_packages
+    install_linux_dependents
+    install_linux_custom_packages
     post_install_linux
-    clear
+    linux_clear
 fi
