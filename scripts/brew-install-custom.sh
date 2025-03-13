@@ -6,8 +6,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . $SCRIPT_DIR/utils.sh
 
 # Paths to the custom formulae and casks directories
-FORMULAE_DIR="$SCRIPT_DIR/../homebrew/custom-formulae"
-CASKS_DIR="$SCRIPT_DIR/../homebrew/custom-casks"
+FORMULAE_DIR="$SCRIPT_DIR/../dependencies/custom-formulae"
+CASKS_DIR="$SCRIPT_DIR/../dependencies/custom-casks"
 
 install_custom() { # Function to install custom formulas and casks
     package_name=$1
@@ -116,7 +116,7 @@ install_custom_casks() {
 }
 
 run_brew_bundle() {
-    brewfile="$SCRIPT_DIR/../homebrew/Brewfile"
+    brewfile="$SCRIPT_DIR/../dependencies/Brewfile"
     if [ -f $brewfile ]; then
         # Run `brew bundle check`
         local check_output

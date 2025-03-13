@@ -77,6 +77,9 @@ install_homebrew() {
     else
         sudo --validate
         NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        echo >> $HOME/.bash_profile
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $HOME/.bash_profile
+        eval "$(/opt/homebrew/bin/brew shellenv)"
     fi
 }
 
