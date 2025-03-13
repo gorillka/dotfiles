@@ -2,17 +2,7 @@
 
 # Get the absolute path of the directory where the script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-CONFIG_FILE="$SCRIPT_DIR/../symlinks.conf"
-
 . $SCRIPT_DIR/utils.sh
-
-
-# Check if configuration file exists
-if [ ! -f "$CONFIG_FILE" ]; then
-    echo "Configuration file not found: $CONFIG_FILE"
-    exit 1
-fi
 
 create_symlinks() {
     info "Creating symbolic links..."
@@ -54,7 +44,7 @@ create_symlinks() {
             ln -s "$source" "$target"
             success "Created symbolic link: $target"
         fi
-    done <"$CONFIG_FILE"
+    done <"$config_file"
 }
 
 delete_symlinks() {
@@ -78,30 +68,46 @@ delete_symlinks() {
         else
             warning "Not found: $target"
         fi
-    done <"$CONFIG_FILE"
+    done <"$config_file"
 }
 
 # Parse arguments
 if [ "$(basename "$0")" = "$(basename "${BASH_SOURCE[0]}")" ]; then
-    case "$1" in
-    "--create")
-        create_symlinks
-        ;;
-    "--delete")
-        if [ "$2" == "--include-files" ]; then
-            include_files=true
-        fi
-        delete_symlinks
-        ;;
-    "--help")
-        # Display usage/help message
-        echo "Usage: $0 [--create | --delete [--include-files] | --help]"
-        ;;
-    *)
-        # Display an error message for unknown arguments
-        error "Error: Unknown argument '$1'"
-        error "Usage: $0 [--create | --delete [--include-files] | --help]"
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -c|--create)
+                create=true
+                shift # past argument
+                ;;
+            -d|--delete)
+                delete=true
+                shift # past argument
+                ;;
+            -f|--include-files)
+                include_files=true
+                shift # past argument
+                ;;
+            -conf|--config-file)
+                config_file=$2
+                shift # past argument
+                shift # past value
+                ;;
+            *)
+                error "Unknown option $1"
+                exit 1
+        esac
+    done
+        # Check if configuration file exists
+    if [ ! -f "$config_file" ]; then
+        error "Configuration file not found: $config_file"
         exit 1
-        ;;
-    esac
+    fi
+
+    if [ "$delete" == "true" ]; then
+        delete_symlinks
+    fi
+
+    if [ "$create" == "true" ]; then
+        create_symlinks
+    fi
 fi

@@ -11,7 +11,7 @@ update_macOS_system_defaults() {
     info "===================="
     info "OSX System Defaults"
 
-    ./$SCRIPT_DIR/osx-defaults.sh
+    $SCRIPT_DIR/osx-defaults.sh
 
     info "Adding .hushlogin file to suppress 'last login' message in terminal..."
     touch ~/.hushlogin
@@ -27,7 +27,7 @@ run_mas_apps() {
 
     mas_file="$SCRIPT_DIR/../dependencies/mas-apps"
     if [ ! -f $mas_file ]; then
-        error "masidfile not found"
+        error "$mas_file not found"
         return 1
     fi
 
@@ -38,11 +38,27 @@ run_mas_apps() {
         echo $mas_info
         mas install $line
         success "Installed"
-    done < "$mas_info"
+    done < "$mas_file"
+}
+
+update_osx_symlinks() {
+    osType=$(getCurrentOSType)
+    printf "\n"
+    info "===================="
+    info "Symbolic Links for $osType"
+    info "===================="
+
+    cd "$HOME/.dotfiles"
+    $SCRIPT_DIR/symlinks.sh -c -d -f -conf "$SCRIPT_DIR/../osx-symlinks.conf"
+
+    info "===================="
+    success "Symbolic Links updated"
+    info "===================="
 }
 
 if [ "$(basename "$0")" = "$(basename "${BASH_SOURCE[0]}")" ]; then
     run_brew_bundle
     run_mas_apps
     update_macOS_system_defaults
+    update_osx_symlinks
 fi
