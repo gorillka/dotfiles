@@ -1,0 +1,59 @@
+font-family = JetBrainsMono Nerd Font
+font-size = 15
+theme = catppuccin-mocha
+
+cursor-style = block
+cursor-style-blink = true
+
+mouse-hide-while-typing = true
+
+background-opacity = 0.65
+background-blur-radius = 15
+
+window-title-font-family = JetBrainsMono Nerd Font
+window-subtitle = working-directory
+window-decoration = false
+# window-padding-x = 10
+# window-padding-y = 10
+# window-padding-balance = true
+
+quit-after-last-window-closed = true
+quit-after-last-window-closed-delay = 15m
+
+macos-non-native-fullscreen = true
+
+macos-titlebar-style = hidden
+macos-titlebar-proxy-icon = hidden
+macos-auto-secure-input = true
+macos-secure-input-indication = true
+
+auto-update = check
+
+shell-integration-features = no-cursor
+copy-on-select = clipboard
+
+keybind = super+i=inspector:toggle
+keybind = global:cmd+§=toggle_quick_terminal
+
+palette = 0=#16161d
+palette = 1=#c34043
+palette = 2=#37f499
+palette = 3=#c0a36e
+palette = 4=#7e9cd8
+palette = 5=#957fb8
+palette = 6=#6a9589
+palette = 7=#c8c093
+palette = 8=#727169
+palette = 9=#e82424
+palette = 10=#9ece6a
+palette = 11=#e6c384
+palette = 12=#7fb4ca
+palette = 13=#938aa9
+palette = 14=#7aa89f
+palette = 15=#dcd7ba
+
+background = #1f1f28
+foreground = #dcd7ba
+cursor-color = #c8c093
+selection-background = #2d4f67
+selection-foreground = #c8c093
