@@ -25,7 +25,7 @@ install_linux_pkgs() {
 }
 
 install_osx_pkgs() {
-    info "OSX test"
+    $SCRIPT_DIR/osx-install.sh
 }
 
 install_os_specific_pkgs() {
@@ -81,7 +81,7 @@ post_install() {
 }
 
 if [ "$(basename "$0")" = "$(basename "${BASH_SOURCE[0]}")" ]; then
-    run_bootstrap_script
+    run_bootstrap_scripts
     install_os_specific_pkgs
     update_symlinks
     bootstrap_clean
