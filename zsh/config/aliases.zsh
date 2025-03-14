@@ -68,3 +68,6 @@ alias tc="clean"
 alias ta="tmux attach"
 
 alias gh="z"
+
+# lazygit
+alias lg="lazygit"
