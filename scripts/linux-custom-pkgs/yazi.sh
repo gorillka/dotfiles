@@ -33,6 +33,8 @@ install_yazi() {
 clean_yazi() {
     info "Cleaning $pkg_name..."
     sudo_checkers "rm -rf $target_dir"
+    sudo_checkers "rm -rf $HOME/.restup"
+    sudo_checkers "rm -rf $HOME/.cargo"
     rustup self uninstall -y
     sudo_checkers "apt remove -y gcc make"
     success "Cleaned"

@@ -16,9 +16,20 @@ install_lazygit() {
     fi
 
     lazygit_version=$(curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest | grep "tag_name" | awk '{print substr($2, 3, length($2)-4) }')
-    wget -P "${target_dir}" "https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_Linux_arm64.tar.gz"
-    tar -xzf "${target_dir}/lazygit_${lazygit_version}_Linux_arm64.tar.gz" -C $target_dir
-    sudo_checkers "mv "${target_dir}/lazygit" /usr/local/bin"
+    case $(uname -m) in
+        x86_64|amd64)
+            core_arch="x86_64"
+            ;;
+        arm*|aarch*)
+            core_arch="arm64"
+            ;;
+        *)
+            warning "Unknown architecture $(uname -m)"
+            exit 1
+    esac
+    curl -Lo $target_dir/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_Linux_${core_arch}.tar.gz"
+    tar -xzf "${target_dir}/lazygit.tar.gz" -C $target_dir
+    sudo_checkers "install $target_dir/lazygit -D -t /usr/local/bin"
     sudo_checkers "rm -rf $target_dir"
 }
 
