@@ -5,9 +5,12 @@ tap "homebrew/core"
 # cask "xcodes"
 # cask "jordanbaird-ice"
 # cask "fork"
+# Terminal emulator that uses platform-native UI and GPU acceleration
 cask "ghostty"
+# Mac App Store command-line interface
 brew "mas"
-
+# Control your tools with a few keystrokes
+cask "raycast"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
 # Clone of cat(1) with syntax highlighting and Git integration
@@ -36,14 +39,23 @@ cask "font-jetbrains-mono-nerd-font"
 cask "karabiner-elements"
 # Open-source code editor
 cask "visual-studio-code"
-
+# Blazing fast terminal file manager written in Rust, based on async I/O
 brew "yazi"
+# Play, record, convert, and stream audio and video
 brew "ffmpeg"
+# 7-Zip is a file archiver with a high compression ratio
 brew "sevenzip"
+# Lightweight and flexible command-line JSON processor
 brew "jq"
+# PDF rendering library (based on the xpdf-3.0 code base)
 brew "poppler"
-brew "ripgrep"
+# Tools and libraries to manipulate images in many formats
 brew "imagemagick"
+# Improved shell history for zsh, bash, fish and nushell
+brew "atuin"
+
+# Search tool like grep and The Silver Searcher
+# brew "ripgrep"
 
 # Ambitious Vim-fork focused on extensibility and agility
 # brew "neovim"
@@ -62,8 +74,6 @@ brew "imagemagick"
 # brew "node"
 # Python version management
 # brew "pyenv"
-# Search tool like grep and The Silver Searcher
-# brew "ripgrep"
 # Powerful, clean, object-oriented scripting language
 # brew "ruby"
 # General-purpose lossless data-compression library
