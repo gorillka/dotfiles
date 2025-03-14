@@ -51,11 +51,10 @@ brew "jq"
 brew "poppler"
 # Tools and libraries to manipulate images in many formats
 brew "imagemagick"
+# Search tool like grep and The Silver Searcher
+brew "ripgrep"
 # Improved shell history for zsh, bash, fish and nushell
 brew "atuin"
-
-# Search tool like grep and The Silver Searcher
-# brew "ripgrep"
 
 # Ambitious Vim-fork focused on extensibility and agility
 # brew "neovim"
