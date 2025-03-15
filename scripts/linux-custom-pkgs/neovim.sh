@@ -8,7 +8,7 @@ filename=$(basename "$BASH_SOURCE")
 pkg_name="${filename%.*}"
 target_dir=/tmp/$pkg_name
 
-install_lneovim() {
+install_neovim() {
     if [ -d "$target_dir" ]; then
         rm -rf "${target_dir}/**/*.*"
     else
