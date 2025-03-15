@@ -5,3 +5,4 @@ wezterm/*.jpg
 wezterm/*.png
 work.zsh
 karabiner/automatic_backups/*.*
+nvim/**/*.json
