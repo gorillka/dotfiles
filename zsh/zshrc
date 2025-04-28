@@ -12,3 +12,6 @@ setopt HIST_IGNORE_ALL_DUPS
 
 # Colors
 [ -f "$HOME/.config/zsh/colors.zsh" ] && source "$HOME/.config/zsh/colors.zsh"
+. "$HOME/.atuin/bin/env"
+
+eval "$(atuin init zsh)"
