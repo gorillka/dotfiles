@@ -34,8 +34,6 @@ install_lazydocker() {
 }
 
 install_docker() {
-    printf "\n"
-    info "===================="
     sh <(curl -sSL https://get.docker.com)
     LATEST=$(curl -sL https://api.github.com/repos/docker/compose/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
     DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
@@ -43,9 +41,10 @@ install_docker() {
     curl -sSL https://github.com/docker/compose/releases/download/$LATEST/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
     chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
     install_lazydocker
-    info "===================="
 }
 
+printf "\n"
+info "===================="
 if command -v docker >/dev/null 2>&1; then
     success "Docker already install."
     if command -v lazydocker >/dev/null 2>&1; then
@@ -60,3 +59,4 @@ else
         install_docker
     fi
 fi
+info "===================="
