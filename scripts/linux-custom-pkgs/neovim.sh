@@ -8,6 +8,10 @@ filename=$(basename "$BASH_SOURCE")
 pkg_name="${filename%.*}"
 target_dir=/tmp/$pkg_name
 
+install_prerequisites() {
+    sudo_checkers apt install build-essential -y
+}
+
 install_neovim() {
     if [ -d "$target_dir" ]; then
         rm -rf "${target_dir}/**/*.*"
@@ -37,6 +41,7 @@ if [ "$(basename "$0")" = "$(basename "${BASH_SOURCE[0]}")" ]; then
     printf "\n"
     info "===================="
     info "Installing $pkg_name..."
+    install_prerequisites
     install_neovim
     success "$pkg_name installed"
     info "===================="
