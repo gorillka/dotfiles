@@ -15,7 +15,7 @@ install_fonts() {
     printf "\n"
     info "===================="
     info "Install JetBrains fonts..."
-    if [[ ! -f $target_dir/$pkg_name* ]]; then
+    if ! ls "$target_dir"/"$pkg_name"* 1> /dev/null 2>&1; then
         if [ ! -d $target_dir ]; then
             info "Creating directory: $target_dir"
             mkdir -p "$target_dir"

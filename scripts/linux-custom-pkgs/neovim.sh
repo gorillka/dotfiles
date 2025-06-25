@@ -9,7 +9,7 @@ pkg_name="${filename%.*}"
 target_dir=/tmp/$pkg_name
 
 install_prerequisites() {
-    sudo_checkers apt install build-essential -y
+    sudo_checkers "apt install build-essential -y"
 }
 
 install_neovim() {
