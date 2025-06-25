@@ -87,3 +87,20 @@ sudo_checkers() {
         sudo $1
     fi
 }
+
+ask_yes_no() {
+    while true; do
+        read -rp "$1 (yes/no/y/n): " answer
+        case "${answer,,}" in
+            yes|y)
+                return 0
+                ;;
+            no|n)
+                return 1
+                ;;
+            *)
+                echo "Please answer yes(y) or no(n)."
+                ;;
+        esac
+    done
+}
