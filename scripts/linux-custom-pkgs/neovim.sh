@@ -29,7 +29,7 @@ install_neovim() {
     esac
     curl -Lo $target_dir/$pkg_name.tar.gz "https://github.com/neovim/neovim/releases/download/v${neovim_version}/nvim-linux-${core_arch}.tar.gz"
     tar -xzf "${target_dir}/$pkg_name.tar.gz" -C $target_dir
-    sudo_checkers "cp -r ${target_dir}/nvim-linux-${core_arch}/ /usr/"
+    sudo_checkers "cp -r ${target_dir}/nvim-linux-${core_arch}/* /usr/"
     sudo_checkers "rm -rf $target_dir"
 }
 
