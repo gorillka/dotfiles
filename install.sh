@@ -119,6 +119,9 @@ install_prerequisites() {
         "DEBIAN OS")
             debian_prerequisites
             ;;
+        "CLOUD DEBIAN OS")
+            debian_prerequisites
+            ;;
         *)
             error "Unsupported OS, exiting"
             exit 1

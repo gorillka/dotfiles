@@ -41,6 +41,9 @@ install_os_specific_pkgs() {
         "DEBIAN OS")
             install_linux_pkgs
             ;;
+        "CLOUD DEBIAN OS")
+            install_linux_pkgs
+            ;;
         *)
             ;;
     esac
