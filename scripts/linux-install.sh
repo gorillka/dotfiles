@@ -47,7 +47,7 @@ post_install_linux() {
 }
 
 linux_clear() {
-    run_linux_custom_scripts "-c"
+    # run_linux_custom_scripts "-c"
     sudo_checkers "apt -y autoremove"
     sudo_checkers "apt -y autoclean"
 }
