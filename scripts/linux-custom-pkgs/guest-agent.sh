@@ -7,13 +7,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 filename=$(basename "$BASH_SOURCE")
 pkg_name="${filename%.*}"
 
-printf "\n"
-info "===================="
-if dpkg -l qemu-guest-agent 2>/dev/null | grep -q '^ii'; then
-    success "Guest Agent already installed."
-else
-    if ask_yes_no "Do you want to install $pkg_name?"; then
+if [ "$(systemd-detect-virt)" = "kvm" ]; then
+    printf "\n"
+    info "===================="
+    if dpkg -l qemu-guest-agent 2>/dev/null | grep -q '^ii'; then
+        success "Guest Agent already installed."
+    else
         sudo_checkers "apt-get install qemu-guest-agent -y"
     fi
+    info "===================="
 fi
-info "===================="
