@@ -9,7 +9,10 @@ pkg_name="${filename%.*}"
 target_dir=/tmp/$pkg_name
 
 install_prerequisites() {
-    sudo_checkers "apt install build-essential -y"
+    sudo_checkers "apt install build-essential curl -y"
+    curl -fsSL https://deb.nodesource.com/setup_23.x -o nodesource_setup.sh
+    sudo_checkers "-E bash nodesource_setup.sh"
+    sudo_checkers "apt-get install -y nodejs"
 }
 
 install_neovim() {
