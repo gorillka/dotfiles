@@ -39,3 +39,15 @@ _fzf_comprun() {
     *)            fzf --preview "bat -n --color=always --line-range :500 {}" "$@" ;;
   esac
 }
+
+tmux_attach_or_new() {
+  local session_name=$1
+  local cmd=$2
+
+  if tmux has-session -t "$session_name" 2>/dev/null; then
+    tmux attach -t "$session_name"
+    tmux send-keys -t "$session_name" "$cmd" C-m
+  else
+    tmux new -s "$session_name" "$cmd; bash"
+  fi
+}

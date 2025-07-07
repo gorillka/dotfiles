@@ -12,7 +12,7 @@ background-blur-radius = 15
 
 window-title-font-family = JetBrainsMono Nerd Font
 window-subtitle = working-directory
-window-decoration = false
+window-decoration = auto
 # window-padding-x = 10
 # window-padding-y = 10
 # window-padding-balance = true
@@ -22,7 +22,7 @@ quit-after-last-window-closed-delay = 15m
 
 macos-non-native-fullscreen = visible-menu
 
-macos-titlebar-style = hidden
+macos-titlebar-style = transparent
 macos-titlebar-proxy-icon = hidden
 macos-auto-secure-input = true
 macos-secure-input-indication = true
@@ -31,6 +31,8 @@ auto-update = check
 
 shell-integration-features = no-cursor
 copy-on-select = clipboard
+
+gtk-single-instance=true
 
 keybind = super+i=inspector:toggle
 keybind = global:cmd+§=toggle_quick_terminal
