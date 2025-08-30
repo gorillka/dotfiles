@@ -1,0 +1,137 @@
+#==============================================================================
+# Network connectivity and DNS resolution check function
+#==============================================================================
+# This function checks the network connection by pinging known DNS servers
+# and verifies DNS resolution for GitHub domains. Prompts user to continue
+# if internet connectivity issues are detected.
+__network_check() {
+    # Disable exit on error and clear error trap for network tests
+    set +e
+    trap - ERR
+
+    # Initialize connectivity status
+    ipv4_connected=false
+    sleep 1
+
+    #--------------------------------------------------------------------------
+    # IPv4 Connectivity Test
+    #--------------------------------------------------------------------------
+    # Test IPv4 connectivity by pinging three reliable DNS servers:
+    # - 1.1.1.1 (Cloudflare DNS)
+    # - 8.8.8.8 (Google DNS)
+    # - 9.9.9.9 (Quad9 DNS)
+    if ping -c 1 -W 1 1.1.1.1 &>/dev/null || \
+       ping -c 1 -W 1 8.8.8.8 &>/dev/null || \
+       ping -c 1 -W 1 9.9.9.9 &>/dev/null; then
+        msg_ok "IPv4 Internet Connected"
+        ipv4_connected=true
+    else
+        msg_error "IPv4 Internet Not Connected"
+    fi
+
+    #--------------------------------------------------------------------------
+    # User Prompt for Offline Installation
+    #--------------------------------------------------------------------------
+    # If IPv4 connectivity fails, ask user whether to proceed without internet
+    if [[ $ipv4_connected == false ]]; then
+        read -r -p "No Internet detected, would you like to continue anyway? <y/N> " prompt
+        if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
+            msg_warn "Expect Issues Without Internet"
+        else
+            fatal "Check Network Settings"
+        fi
+    fi
+
+    #--------------------------------------------------------------------------
+    # DNS Resolution Test for GitHub Domains
+    #--------------------------------------------------------------------------
+    # Array of GitHub-related domains that need to be accessible
+    GIT_HOSTS=("github.com" "raw.githubusercontent.com" "api.github.com")
+    GIT_STATUS="${YELLOW}Git DNS:${END}"
+    DNS_FAILED=false
+
+    # DNS resolution function - handles different OS types
+    resolve_dns() {
+        local host="$1"
+
+        case $OS_TYPE in
+            macOS)
+                # Use macOS dscacheutil to resolve DNS
+                dscacheutil -q host -a name "$host" | awk '/ip_address:/ {print $2}' | \
+                    grep -E '(^([0-9]{1,3}\.){3}[0-9]{1,3}$)|(^[a-fA-F0-9:]+$)' | head -n1
+                ;;
+            Linux)
+                # Use Linux getent to resolve DNS
+                getent hosts "$host" | awk '{ print $1 }' | \
+                    grep -E '(^([0-9]{1,3}\.){3}[0-9]{1,3}$)|(^[a-fA-F0-9:]+$)' | head -n1
+                ;;
+        esac
+    }
+
+    # Test DNS resolution for each GitHub domain
+    for HOST in "${GIT_HOSTS[@]}"; do
+        RESOLVEDIP=$(resolve_dns "$HOST")
+        if [[ -z "$RESOLVEDIP" ]]; then
+            fatal "$GIT_STATUS ${BLUE}$HOST${END}"
+        else
+            msg_ok "$GIT_STATUS ${BLUE}$HOST${END}"
+        fi
+    done
+
+    # Re-enable exit on error and restore error trap
+    set -e
+    trap 'error_handler $LINENO "$BASH_COMMAND"' ERR
+}
+
+#==============================================================================
+# Prerequisites Installation Function
+#==============================================================================
+# Installs required packages and tools based on the detected operating system
+__install_prerequisites() {
+    msg_act "Installing prerequisites for ${CYAN}${OS_TYPE}${END}"
+
+    # Install OS-specific prerequisites
+    case $OS_TYPE in
+        Linux)
+            # Update system packages and install Linux-specific tools
+            update_linux_os
+            install_linux_pkgs gpg git
+            install_gum_client_linux
+            ;;
+        macOS)
+            # Install Xcode command line tools, Homebrew, and gum
+            install_xcode
+            install_homebrew
+            install_brew_package "bash gum"
+            ;;
+        *)
+            # Exit if running on unsupported operating system
+            fatal "Unsupported OS type: ${CYAN}${OS_TYPE}${END}"
+            ;;
+    esac
+
+    msg_ok "Prerequisites for ${CYAN}${OS_TYPE}${END} ${GREEN}installed successfully${END}"
+}
+
+#==============================================================================
+# Main Installation Function
+#==============================================================================
+# Orchestrates the complete installation process:
+# 1. Network connectivity check
+# 2. Prerequisites installation
+# 3. Download additional tools and functions
+# 4. Clone/update repository
+# 5. Execute main setup script
+pre_install() {
+    # Step 1: Verify network connectivity and DNS resolution
+    __network_check
+
+    # Step 2: Install OS-specific prerequisites
+    __install_prerequisites
+
+    # Step 3: Clone or update the dotfiles repository
+    clone_update_repo
+
+    # Step 4: Execute the main setup script
+    bash "${REPO_DIR}/start.sh"
+}
