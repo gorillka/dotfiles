@@ -18,7 +18,7 @@ install_pkg() {
     if [ -d $configDir ]; then
         title==$(grep "TITLE=" "${configDir}/$1.conf" | cut -d'=' -f2)
     else
-        title=$(grep "TITLE=" curl -fsSL $configPath/$name.conf | cut -d'=' -f2)
+        title=$(grep "TITLE=" $(curl -fsSL $configPath/$name.conf) | cut -d'=' -f2)
     fi
 
     msg_act "$title"
