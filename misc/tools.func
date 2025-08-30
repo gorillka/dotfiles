@@ -16,9 +16,9 @@ install_pkg() {
     local configPath=https://raw.githubusercontent.com/gorillka/dotfiles/refs/heads/${PROFILE}/pkgs
     local title
     if [ -d $configDir ]; then
-        title==$(grep "TITLE=" "${configDir}/$1.conf" | cut -d'=' -f2)
+        title=$(grep -oP '^TITLE="\K[^"]+' "${configDir}/$1.conf")
     else
-        title=$(grep "TITLE=" $(curl -fsSL $configPath/$name.conf) | cut -d'=' -f2)
+        title=$(curl -fsSL "$configPath/$name.conf" | grep -oP '^TITLE="\K[^"]+')
     fi
 
     msg_act "$title"
