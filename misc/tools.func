@@ -26,6 +26,8 @@ install_pkg() {
         source "${installDir}/${name}.func"
     else
         source <(curl -fsSL "$(__path_for_pkg)/${name}.func")
+    fi
+
     case $OS_TYPE in
         Linux)
             install_linux "$name"
