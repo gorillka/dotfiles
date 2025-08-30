@@ -1,0 +1,212 @@
+#!/usr/bin/env bash
+
+# Guard clause to prevent multiple loading of this module
+[[ -n "${_MSG_FUNC_LOADED:-}" ]] && return
+_MSG_FUNC_LOADED=1
+
+#==============================================================================
+# SPINNER AND MESSAGE FUNCTIONS
+#==============================================================================
+# This module provides spinner animation and various message display functions
+# for interactive shell scripts with visual feedback.
+
+#------------------------------------------------------------------------------
+# Private function to display animated spinner
+# Uses Unicode braille characters for smooth animation
+#------------------------------------------------------------------------------
+__spinner() {
+    # Define spinner characters (Unicode braille patterns)
+    local -a chars=(⣾ ⣽ ⣻ ⢿ ⡿ ⣟ ⣯ ⣷)
+    local i=0
+
+    # Infinite loop for continuous animation
+    while true; do
+        # Calculate current character index using modulo
+        local index=$((i++ % ${#chars[@]}))
+
+        # Clear line and print spinner with message
+        # \r = carriage return, \033[2K = clear entire line
+        printf "\r\033[2K%s %s" "${RED}${chars[$index]}${END}" "  ${SPINNER_MSG:-}"
+
+        # Animation speed (80ms delay)
+        sleep 0.08
+    done
+}
+
+#------------------------------------------------------------------------------
+# Private function to stop the spinner process
+# Handles cleanup of background process and temporary files
+#------------------------------------------------------------------------------
+__stop_spinner() {
+    # Get spinner PID from variable or temp file
+    local pid="${SPINNER_PID:-}"
+    [[ -z "$pid" && -f /tmp/.spinner.pid ]] && pid=$(</tmp/.spinner.pid)
+
+    # Kill spinner process if valid PID exists
+    if [[ -n "$pid" && "$pid" =~ ^[0-9]+$ ]]; then
+        # Try graceful termination first
+        if kill "$pid" 2>/dev/null; then
+            sleep 0.05
+            # Force kill if still running
+            kill -9 "$pid" 2>/dev/null || true
+            # Wait for process to terminate
+            wait "$pid" 2>/dev/null || true
+        fi
+        # Clean up temporary PID file
+        rm -f /tmp/.spinner.pid
+    fi
+
+    # Clean up environment variables
+    unset SPINNER_PID SPINNER_MSG
+
+    # Reset terminal to sane state
+    stty sane 2>/dev/null || true
+}
+
+#------------------------------------------------------------------------------
+# Private function for general message formatting
+# Parameters: action_symbol message_text
+#------------------------------------------------------------------------------
+__msg_general() {
+    local action="$1"
+    local message="$2"
+
+    # Print formatted message with action symbol
+    printf "%s %b\n" "$action" "$message"
+}
+
+#------------------------------------------------------------------------------
+# Display spinning message (prevents duplicate messages)
+# Parameters: message_text
+#------------------------------------------------------------------------------
+msg_spin() {
+    local msg="$1"
+    [[ -z "$msg" ]] && return
+
+    # Initialize message tracking variable if not set
+    if [[ -z "$MSG_INFO_SHOWN" ]]; then
+        export MSG_INFO_SHOWN=" "
+    fi
+
+    # Skip if message already shown (prevent duplicates)
+    if [[ "$MSG_INFO_SHOWN" == *" $msg "* ]]; then
+        return
+    fi
+
+    # Add message to shown list
+    MSG_INFO_SHOWN+=" $msg "
+
+    if [ "${VERBOSE:-no}" == "yes" ]; then
+        return
+    fi
+
+    # Stop any existing spinner and start new one
+    __stop_spinner
+    SPINNER_MSG="$msg"
+
+    # Start spinner in background
+    __spinner &
+    SPINNER_PID=$!
+
+    # Save PID to file for recovery
+    echo "$SPINNER_PID" > /tmp/.spinner.pid
+    # Detach from current shell
+    disown "$SPINNER_PID" 2>/dev/null || true
+}
+
+#------------------------------------------------------------------------------
+# Display success message and stop spinner
+# Parameters: message_text
+#------------------------------------------------------------------------------
+msg_ok() {
+    local msg="$1"
+    [[ -z "$msg" ]] && return
+
+    # Stop spinner and clear line
+    __stop_spinner
+    clear_line
+
+    # Display success message to stderr
+    __msg_general "${OK}" "${msg}" >&2
+
+    # Remove message from shown list
+    MSG_INFO_SHOWN=${MSG_INFO_SHOWN/ "$msg" / }
+
+    # Clean up whitespace in tracking variable
+    MSG_INFO_SHOWN=$(echo "$MSG_INFO_SHOWN" | sed -e 's/^ *//' -e 's/ *$//')
+}
+
+#------------------------------------------------------------------------------
+# Display action message with delay
+# Parameters: message_text
+#------------------------------------------------------------------------------
+msg_act() {
+    local msg="$1"
+
+    # Display action message and pause for visibility
+    __msg_general "${ACTION}" "${msg}" && sleep 1
+}
+
+#------------------------------------------------------------------------------
+# Display question/prompt message
+# Parameters: message_text
+#------------------------------------------------------------------------------
+msg_ask() {
+    local msg="$1"
+
+    # Display question with colon suffix
+    __msg_general "${QUESTION}" "$msg:"
+}
+
+#------------------------------------------------------------------------------
+# Display informational note message
+# Parameters: message_text
+#------------------------------------------------------------------------------
+msg_note() {
+    local msg="$1"
+
+    # Display note message
+    __msg_general "${NOTE}" "$msg"
+}
+
+#------------------------------------------------------------------------------
+# Display skip message
+# Parameters: message_text
+#------------------------------------------------------------------------------
+msg_skip() {
+    local msg="$1"
+
+    # Display skip message
+    __msg_general "${SKIP}" "$msg"
+}
+
+#------------------------------------------------------------------------------
+# Display warning message (stops spinner first)
+# Parameters: message_text
+#------------------------------------------------------------------------------
+msg_warn() {
+    # Stop spinner before showing warning
+    __stop_spinner
+    local msg="$1"
+
+    # Display warning message
+    __msg_general "${WARNING}" "$msg"
+}
+
+#------------------------------------------------------------------------------
+# Display error message (stops spinner first)
+# Parameters: message_text
+#------------------------------------------------------------------------------
+msg_error() {
+    # Stop spinner before showing error
+    __stop_spinner
+    local msg="$1"
+
+    # Display error message
+    __msg_general "${ERROR}" "$msg"
+}
+
+#------------------------------------------------------------------------------
+# Set up trap to ensure spinner cleanup on script exit
+#------------------------------------------------------------------------------
+trap '__stop_spinner; exit' EXIT INT TERM

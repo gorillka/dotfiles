@@ -1,0 +1,79 @@
+# Guard clause to prevent multiple loading of this module
+[[ -n "${_BUILD_FUNC_LOADED:-}" ]] && return
+_BUILD_FUNC_LOADED=1
+# Main function that initializes the build environment by loading variables, checking OS type, and setting up error handling
+load_build_func() {
+    # Prevent multiple initialization of functions
+    [[ -n "${_BUILD_FUNCTIONS_LOADED:-}" ]] && return
+    _BUILD_FUNCTIONS_LOADED=1
+
+    __variables
+    __check_os_type
+    __override_sudo
+    catch_errors
+}
+
+# Initialize global variables used throughout the script
+__variables() {
+    VERBOSE="${VERBOSE:-yes}"                                                          # Verbose mode flag, defaults to "no"
+    OS_TYPE=""                                                                  # Operating system type (Linux/macOS)
+    PROFILE=${PROFILE:-prod}                                                   # Default profile to 'dev' if unset
+    REPO_DIR_NAME=$([ "$PROFILE" == "prod" ] && echo ".dotfiles" || echo ".dotfiles_${PROFILE}")  # Repository directory name based on profile
+    REPO_DIR="${HOME}/${REPO_DIR_NAME}"                                        # Full path to repository directory
+    STD=$([ "$VERBOSE" == "yes" ] && STD="" || STD="silent" )                                                               # Standard output mode
+    MSG_INFO_SHOWN=" "                                                         # Flag to track if info message was shown
+    SUDO=""
+}
+
+# This function enables error handling in the script by setting options and defining a trap for the ERR signal.
+catch_errors() {
+    set -Eeuo pipefail                                      # Enable strict error handling
+    trap 'error_handler $LINENO "$BASH_COMMAND"' ERR       # Set trap for error handling
+}
+
+# This function is called when an error occurs. It receives the exit code, line number, and command that caused the error, and displays an error message.
+error_handler() {
+    printf "\e[?25h"                                        # Show cursor
+    local exit_code="$?"                                    # Capture exit code
+    local line_number="$1"                                  # Line number where error occurred
+    local command="$2"                                      # Command that caused the error
+    local error_message="${RED}[ERROR]${END} in line ${RED}$line_number${END}: exit code ${RED}$exit_code${END}: while executing command ${YELLOW}$command${END}"
+    fatal "$error_message"                                  # Display fatal error message
+}
+
+# Detect the operating system type and configure OS-specific settings
+__check_os_type() {
+    local osType=$(uname -s)                               # Get OS type using uname
+    case $osType in
+        Linux)
+            OS_TYPE="Linux"                                # Set OS type to Linux                               # Configure sudo for Linux
+            ;;
+        Darwin)
+            OS_TYPE="macOS"                                # Set OS type to macOS
+            ;;
+        *)
+            msg_error "Unsupported OS type: $osType"       # Handle unsupported OS
+            fatal
+            ;;
+    esac
+
+    msg_ok "Detected ${CYAN}${OS_TYPE}${END}"             # Display detected OS type
+}
+
+# This function is called when the user decides to exit the script. It clears the screen and displays an exit message.
+exit_script() {
+    clear                                                  # Clear the screen
+    # if alias sudo &>/dev/null; then                       # Check if sudo alias exists
+    #     unalias sudo                                       # Remove sudo alias if it exists
+    # fi
+}
+
+# Configure sudo behavior based on user privileges and system availability
+__override_sudo() {
+    if [ "$USER" = "root" ] || [ ! command -v sudo &>/dev/null ]; then
+        SUDO=                                      # Remove sudo if running as root or sudo not available
+    else
+        SUDO=sudo                               # Preserve environment variables with sudo
+        eval "$SUDO --validate"                                    # Validate/refresh sudo credentials
+    fi
+}
