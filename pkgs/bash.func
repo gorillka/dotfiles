@@ -1,0 +1,8 @@
+
+install_macos() {
+    install_brew_package "bash"
+}
+
+install_linux() {
+    msg_warn "Not supported for $OS_TYPE"
+}
