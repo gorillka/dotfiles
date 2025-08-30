@@ -97,14 +97,13 @@ __install_prerequisites() {
         Linux)
             # Update system packages and install Linux-specific tools
             update_linux_os
-            install_linux_pkgs gpg git
-            install_gum_client_linux
+            install_pkg gpg git gum
             ;;
         macOS)
             # Install Xcode command line tools, Homebrew, and gum
             install_xcode
             install_homebrew
-            install_brew_package "bash gum"
+            install_pkg bash gum
             ;;
         *)
             # Exit if running on unsupported operating system
