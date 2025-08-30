@@ -1,0 +1,131 @@
+
+# Guard clause to prevent multiple loading of this module
+[[ -n "${_TOOLS_FUNC_LOADED:-}" ]] && return
+_BUILD_FUNC_LOADED=1
+
+install_pkgs() {
+    for pkg in "$@"; do
+        install_pkg "$pkg"
+    done
+}
+
+install_pkg() {
+    local name=$1
+    local installDir="${REPO_DIR}/pkgs"
+    local configDir="${REPO_DIR}/pkgs"
+    local title=$(grep "TITLE=" "${configDir}/$1.conf" | cut -d'=' -f2)
+    msg_act "$title"
+    msg_spin "Installing..."
+    . "${installDir}/${name}.func"
+    case $OS_TYPE in
+        Linux)
+            install_linux "$name"
+            ;;
+        macOS)
+            install_macos "$name"
+            ;;
+    esac
+    msg_ok "Installed: ${title}"
+}
+
+# ------------------------------------------------------------------------------
+# MacOS
+# ------------------------------------------------------------------------------
+
+# Install Xcode command line tools
+install_xcode() {
+    msg_act "Installing Apple's CLI tools (prerequisites for Git and Homebrew)"
+    msg_spin "Installing..."
+
+    # Check if Xcode CLI tools are already installed
+    if xcode-select -p >/dev/null; then
+        clear_line
+        msg_skip "Apple's CLI tools already installed"
+    else
+        # Install Xcode CLI tools and accept license
+        $STD xcode-select --install
+        $STD sudo 'xcodebuild -license accept'
+        msg_ok "Apple's CLI tools installed"
+    fi
+}
+
+# Install Homebrew package manager
+install_homebrew() {
+    msg_act "Installing Homebrew"
+    msg_spin "Installing..."
+
+    # Set Homebrew cask installation directory
+    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+
+    # Check if Homebrew is already installed
+    if hash brew &>/dev/null; then
+        clear_line
+        msg_skip "Homebrew already installed"
+    else
+        # Install Homebrew non-interactively
+        export NONINTERACTIVE=1
+        export HOMEBREW_NO_ENV_HINTS=1
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+        # Add Homebrew to PATH in bash profile
+        echo >>"$HOME/.bash_profile"
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$HOME/.bash_profile"
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+        msg_ok "Homebrew installed"
+    fi
+}
+
+# Install a package using Homebrew
+install_brew_package() {
+    local name=$1
+
+    # Exit if no package name provided
+    if [ -z "$name" ]; then
+        return
+    fi
+
+    # Check if package is already installed
+    if ! command -v "$name" >/dev/null 2>&1; then
+        msg_act "Installing $name"
+        msg_spin "Installing..."
+        # Install package with optional quiet flag based on verbose setting
+        $STD brew install "$name" $([ "$VERBOSE" == "yes" ] && echo "-q")
+        msg_ok "$name installed"
+    else
+        msg_skip "$name already installed"
+    fi
+}
+
+# Update and upgrade Homebrew
+upgrade_homebrew() {
+    msg_act "Upgrading Homebrew"
+    msg_spin "Upgrading..."
+    # Update package list and upgrade installed packages
+    $STD brew update $([ "$VERBOSE" == "yes" ] && echo "-q")
+    $STD brew upgrade $([ "$VERBOSE" == "yes" ] && echo "-q")
+    msg_ok "Homebrew upgraded"
+}
+
+# ------------------------------------------------------------------------------
+# Linux
+# ------------------------------------------------------------------------------
+
+# Update Linux operating system packages
+update_linux_os() {
+    msg_act "Updating ${CYAN}$OS_TYPE${END}"
+    msg_spin "Updating..."
+    # Update package list and perform distribution upgrade
+    $STD $SUDO apt update
+    $STD $SUDO apt dist-upgrade -y
+    msg_ok "${CYAN}$OS_TYPE${END} updated"
+}
+
+# Upgrade Linux packages
+upgrade_linux() {
+    msg_act "Upgrading packages for ${CYAN}$OS_TYPE${END}"
+    msg_info "Upgrading..."
+    # Update package list and upgrade installed packages
+    $STD $SUDO apt update
+    $STD $SUDO apt upgrade -y
+    msg_ok "Packages for ${CYAN}$OS_TYPE${END} upgraded"
+}
