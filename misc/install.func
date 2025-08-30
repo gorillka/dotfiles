@@ -90,6 +90,8 @@ __network_check() {
 __install_prerequisites() {
     msg_act "Installing prerequisites for ${CYAN}${OS_TYPE}${END}"
 
+    source <(curl -fsSL https://raw.githubusercontent.com/gorillka/dotfiles/refs/heads/${PROFILE}/misc/tools.func)
+
     # Install OS-specific prerequisites
     case $OS_TYPE in
         Linux)
