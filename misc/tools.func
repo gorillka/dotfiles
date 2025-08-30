@@ -40,7 +40,7 @@ install_pkg() {
 }
 
 __path_for_pkg() {
-    https://raw.githubusercontent.com/gorillka/dotfiles/refs/heads/${PROFILE}/pkgs
+    echo "https://raw.githubusercontent.com/gorillka/dotfiles/refs/heads/${PROFILE}/pkgs"
 }
 
 # ------------------------------------------------------------------------------
