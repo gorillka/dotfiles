@@ -13,11 +13,12 @@ install_pkg() {
     local name=$1
     local installDir="${REPO_DIR}/pkgs"
     local configDir="${REPO_DIR}/pkgs"
+    local configPath=https://raw.githubusercontent.com/gorillka/dotfiles/refs/heads/${PROFILE}/pkgs
     local title
     if [ -d $configDir ]; then
         title==$(grep "TITLE=" "${configDir}/$1.conf" | cut -d'=' -f2)
     else
-        title=$(grep "TITLE=" curl -fsSL "$(__path_for_pkg)/$name.conf" | cut -d'=' -f2)
+        title=$(grep "TITLE=" curl -fsSL $configPath/$name.conf | cut -d'=' -f2)
     fi
 
     msg_act "$title"
@@ -25,7 +26,7 @@ install_pkg() {
     if [ -d $configDir ]; then
         source "${installDir}/${name}.func"
     else
-        source <(curl -fsSL "$(__path_for_pkg)/${name}.func")
+        source <(curl -fsSL $configPath/${name}.func)
     fi
 
     case $OS_TYPE in
@@ -37,10 +38,6 @@ install_pkg() {
             ;;
     esac
     msg_ok "Installed: ${title}"
-}
-
-__path_for_pkg() {
-    echo "https://raw.githubusercontent.com/gorillka/dotfiles/refs/heads/${PROFILE}/pkgs"
 }
 
 # ------------------------------------------------------------------------------
