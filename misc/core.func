@@ -1,0 +1,100 @@
+# ------------------------------------------------------------------------------
+# Core Functions Library - Prevents multiple loading of core functionality
+# ------------------------------------------------------------------------------
+
+# Guard clause to prevent multiple loading of this module
+[[ -n "${_CORE_FUNC_LOADED:-}" ]] && return
+_CORE_FUNC_LOADED=1
+
+# ------------------------------------------------------------------------------
+# Loads all core functions required by the script
+# Initializes colors and icons for consistent output formatting
+# ------------------------------------------------------------------------------
+load_core_func() {
+    # Prevent multiple initialization of functions
+    [[ -n "${__CORE_FUNCTIONS_LOADED:-}" ]] && return
+    __CORE_FUNCTIONS_LOADED=1
+
+    # Initialize color definitions
+    __colors
+
+    # Initialize icon definitions
+    __icons
+}
+
+# ------------------------------------------------------------------------------
+# Sets ANSI color codes used for styled terminal output.
+# Defines both bold and normal variants for consistent theming
+# ------------------------------------------------------------------------------
+__colors() {
+    # Bold color definitions for emphasis
+    RED=$'\e[1;31m'           # Bold red for errors
+    GREEN=$'\e[1;32m'         # Bold green for success
+    GREEN_NORMAL=$'\e[32m'    # Normal green for secondary success
+    YELLOW=$'\e[1;33m'        # Bold yellow for warnings
+    BLUE=$'\e[1;34m'          # Bold blue for information
+    MAGENTA=$'\e[1;1;35m'     # Bold magenta for special cases
+    CYAN=$'\e[1;36m'          # Bold cyan for highlights
+    CYAN_NORMAL=$'\e[36m'     # Normal cyan for secondary highlights
+    ORANGE=$'\e[1;38;5;214m'  # Orange for questions/prompts
+    END=$'\e[0m'              # Reset sequence to end formatting
+}
+
+# ------------------------------------------------------------------------------
+# Sets symbolic icons used throughout user feedback and prompts.
+# Each icon is prefixed with appropriate colors for visual consistency
+# ------------------------------------------------------------------------------
+__icons() {
+    OK="${CYAN}:::${END}"          # General information/status
+    ACTION="${GREEN}==>${END}"      # Action being performed
+    QUESTION="${ORANGE}???${END}"   # User input required
+    NOTE="${BLUE}***${END}"       # Important note or tip
+    SKIP="${MAGENTA}---${END}"      # Skipped operation
+    WARNING="${YELLOW}!!!${END}"    # Warning message
+    ERROR="${RED}>-<${END}"         # Error message
+}
+
+# ------------------------------------------------------------------------------
+# Sets default verbose mode for script and os execution.
+# Controls output verbosity based on VERBOSE environment variable
+# ------------------------------------------------------------------------------
+set_std_mode() {
+    # Check if verbose mode is enabled
+    if [ "${VERBOSE:-no}" = "yes" ]; then
+        STD=""        # Show all output in verbose mode
+    else
+        STD="silent"  # Suppress output in normal mode
+    fi
+}
+
+# ------------------------------------------------------------------------------
+# Silent execution function
+# Redirects both stdout and stderr to /dev/null for quiet operation
+# ------------------------------------------------------------------------------
+silent() {
+    "$@" >/dev/null 2>&1
+}
+
+# ------------------------------------------------------------------------------
+# Prints error message and terminates script
+# Uses interrupt signal to allow cleanup handlers to run
+# ------------------------------------------------------------------------------
+fatal() {
+    # Display error message using msg_error function
+    msg_error "$1"
+
+    # Send interrupt signal to current process for clean termination
+    kill -INT $$
+}
+
+# ------------------------------------------------------------------------------
+# Clears the current terminal line
+# Uses tput commands with fallback to ANSI escape sequences
+# ------------------------------------------------------------------------------
+clear_line() {
+    # Move cursor to beginning of line (carriage return)
+    tput cr 2>/dev/null || echo -en "\r"
+
+    # Clear from cursor to end of line
+    tput el 2>/dev/null || echo -en "\033[K"
+}
