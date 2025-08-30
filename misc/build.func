@@ -77,3 +77,27 @@ __override_sudo() {
         eval "$SUDO --validate"                                    # Validate/refresh sudo credentials
     fi
 }
+
+# Clone or update the dotfiles repository
+clone_update_repo() {
+    # Check if repository directory doesn't exist
+    if [ ! -d "$REPO_DIR" ]; then
+        # Clone the repository if it doesn't exist
+        $STD git clone https://github.com/gorillka/dotfiles.git "$REPO_DIR"
+    elif [ -d "$REPO_DIR" ]; then
+        # If repository exists, update it
+        cd "$REPO_DIR"
+        # Fetch latest changes from origin
+        $STD git fetch origin
+        sleep 1
+        # Reset to latest commit on appropriate branch (dev or master based on profile)
+        $STD git reset --hard "origin/$PROFILE"
+        sleep 1
+    fi
+
+    # Switch to dev branch if profile is set to dev
+    if [ "$PROFILE" == "dev" ]; then
+        cd "$REPO_DIR"
+        git checkout dev
+    fi
+}
