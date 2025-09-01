@@ -128,7 +128,6 @@ update_linux_os() {
     msg_spin "Updating..."
     # Update package list and perform distribution upgrade
     $STD $SUDO apt update
-    $STD $SUDO apt dist-upgrade -y
     msg_ok "${CYAN}$OS_TYPE${END} updated"
 }
 
