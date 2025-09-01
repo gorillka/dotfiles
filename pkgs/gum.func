@@ -10,8 +10,6 @@ install_linux() {
         local gpg_dir="/etc/apt/keyrings"
         local gpg_key_name="charm.gpg"
 
-        msg_act "Installing gum"
-        msg_spin "Installing..."
 
         # Add GPG key and repository if not already present
         if [ ! -f "${gpg_dir}/${gpg_key_name}" ]; then
@@ -26,6 +24,5 @@ install_linux() {
         # Update package list and install gum
         $STD $SUDO apt update
         $STD $SUDO apt install -y gum
-        msg_ok "gum installed"
     fi
 }

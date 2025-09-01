@@ -37,7 +37,7 @@ install_pkg() {
             install_macos "$name"
             ;;
     esac
-    msg_ok "Installed: ${title}"
+    msg_ok "Installed: ${name}"
 }
 
 # ------------------------------------------------------------------------------
