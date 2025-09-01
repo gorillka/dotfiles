@@ -4,7 +4,7 @@ install_macos() {
 }
 
 install_linux() {
-    if [ ! -z "$(command -v $1)" ]; then
+    if [ -z "$(command -v $1)" ]; then
         $STD $SUDO apt install -y $1
     fi
 }
