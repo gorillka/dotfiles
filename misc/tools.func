@@ -13,7 +13,7 @@ install_pkg() {
     local name=$1
     local installDir="${REPO_DIR}/pkgs"
     local configDir="${REPO_DIR}/pkgs"
-    local configPath=https://raw.githubusercontent.com/gorillka/dotfiles/refs/heads/${PROFILE}/pkgs
+    local configPath=https://raw.githubusercontent.com/gorillka/dotfiles/${PROFILE}/pkgs
     local title
     if [ -d $configDir ]; then
         title=$(grep "^TITLE=" "${configDir}/$1.conf" | cut -d'=' -f2)

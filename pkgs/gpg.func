@@ -1,0 +1,15 @@
+
+install_macos() {
+    msg_warn "Not supported for $OS_TYPE"
+}
+
+install_linux() {
+    if [ -z "$(command -v $1)" ]; then
+        msg_ok "$1 already installed"
+    else
+        msg_act "Installing $1"
+        msg_spin "Installing..."
+        $STD $SUDO apt install -y gpg
+        msg_ok "$1 installed"
+    fi
+}
