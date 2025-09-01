@@ -54,6 +54,20 @@ __icons() {
     ERROR="${RED}>-<${END}"         # Error message
 }
 
+safe_source() {
+    local url="$1"
+    local content
+
+    content=$(curl -fsSL "$url")
+
+    if [ $? -eq 0 ]; then
+        eval "$content"
+    else
+        echo "ERROR: $url" >&2
+        return 1
+    fi
+}
+
 # ------------------------------------------------------------------------------
 # Sets default verbose mode for script and os execution.
 # Controls output verbosity based on VERBOSE environment variable
