@@ -1,0 +1,58 @@
+# Guard clause to prevent multiple loading of this module
+[[ -n "${_PROMPT_FUNC_LOADED:-}" ]] && return
+_PROMPT_FUNC_LOADED=1
+
+# Function to display a confirmation prompt with custom styling
+# $1: Prompt message
+# $2: Affirmative text (defaults to "Yes")
+# $3: Negative text (defaults to "No")
+confirm_prompt() {
+    gum confirm "$1" \
+        --prompt.foreground "#ff8700" \
+        --affirmative "${2:-Yes}" \
+        --selected.background "#00FFFF" \
+        --selected.foreground "#000" \
+        --negative "${3:-No}"
+}
+
+# Function to display a selection prompt with custom styling
+# Returns the selected choice
+# $@: All arguments passed as selection options
+select_prompt() {
+    local choice=$(gum choose \
+        --limit=1 \
+        --cursor.foreground "#00FFFF" \
+        --item.foreground "#fff" \
+        --selected.foreground "#00FF00" \
+        "$@"
+    )
+
+    echo "$choice"
+}
+
+multi_select_prompt() {
+    local choice=$(gum choose \
+        --no-limit \
+        --cursor.foreground "#00FFFF" \
+        --item.foreground "#fff" \
+        --selected.foreground "#00FF00" \
+        "$@"
+    )
+
+    echo "$choice"
+}
+
+# Function to display exit message and terminate the script
+# $1: Exit message (defaults to "Exiting...")
+exit_prompt() {
+    clear
+    echo
+
+    # Display spinning message for exit
+    msg_spin "${1:-Exiting...}"
+    sleep 2
+
+    # Clean up and exit
+    exit_script
+    exit
+}

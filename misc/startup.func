@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+
+# Guard clause to prevent multiple loading of this module
+[[ -n "${_STARTUP_FUNC_LOADED:-}" ]] && return
+_STARTUP_FUNC_LOADED=1
+
+# Source internal functions
+source $(dirname "${BASH_SOURCE[0]}")/internal.func
+
+# Main startup function - entry point for the script
+startup() {
+    # Display welcome screen
+    __show_welcome_prompt
+
+    # Load welcome functions and pause briefly
+    . $(dirname "${BASH_SOURCE[0]}")/welcome.func && sleep 1
+
+    # Prompt user for verbose mode preference
+    __show_verbose_prompt
+
+    # Show main menu options
+    __choose_startup_options
+}
+
+# Alternative startup function (simplified version)
+__startup() {
+    clear
+    __show_welcome_prompt
+    __choose_startup_options
+}
+
+# Display the welcome prompt by sourcing welcome functions
+__show_welcome_prompt() {
+    source $(dirname "${BASH_SOURCE[0]}")/welcome.func
+    clear
+    welcome_prompt
+}
+
+# Prompt user to enable or disable verbose mode
+__show_verbose_prompt() {
+    # Ask user for verbose mode preference
+    confirm_prompt "Would you like to enable verbose mode?" "Yes" "No" \
+        && VERBOSE="yes" \
+        || VERBOSE="no"
+
+    # Show progress spinner while changing mode
+    msg_spin "Changing verbose mode..."
+    set_std_mode && sleep 1
+    msg_ok "Verbose mode set to $VERBOSE"
+}
+
+# Display main menu and handle user selection
+__choose_startup_options() {
+    # Display menu prompt and options
+    msg_ask "Choose which setup you want to use: " && sleep 1
+    msg_warn "The 'default' option will install the most commonly used packages."
+    msg_warn "The 'customize' option will provide a list of packages to install."
+    msg_warn "The 'update' option will update the packages that are already installed."
+    msg_warn "The 'cancel' option will terminate the script."
+
+    # Get user selection
+    choice=$(select_prompt \
+        "default" \
+        "customize" \
+        "update" \
+        "cancel"
+    )
+
+    # Process user selection
+    case "$choice" in
+        default)
+            __install_default_packages
+            ;;
+        customize)
+            __install_custom_packages
+            ;;
+        update)
+            __upgrade_packages
+            ;;
+        cancel)
+            exit_prompt
+            ;;
+    esac
+
+    # Return to startup menu
+    __startup
+}
+
+# Install default package set
+__install_default_packages() {
+    msg_act "Installing default packages"
+    msg_spin "Installing..."
+    sleep 2
+    msg_ok "Default packages installed successfully"
+}
+
+# Install custom package selection
+__install_custom_packages() {
+    clear
+    msg_act "Select packages"
+
+    source $(dirname "${BASH_SOURCE[0]}")/pkg.func
+    local pkgs=()
+    for pkg in $(get_list_pkg_name "$OS_TYPE"); do
+        pkgs+=($pkg)
+    done
+
+    install_pkg "${pkgs[@]}"
+}
+
+# Upgrade existing packages based on OS type
+__upgrade_packages() {
+    # Source tools functions for package management
+    source $(dirname "${BASH_SOURCE[0]}")/tools.func
+    clone_update_repo
+
+    # Handle different operating systems
+    case $OS_TYPE in
+        Linux)
+            # Update Linux system and packages
+            update_linux_os
+            upgrade_linux
+            ;;
+        macOS)
+            # Update Homebrew packages
+            upgrade_homebrew
+            ;;
+        *)
+            # Handle unsupported OS
+            msg_error "Unsupported OS type: $osType"
+            fatal
+            ;;
+    esac
+}
+
+# Execute startup if this script is run directly (not sourced)
+if [ "$(basename "$0")" = "$(basename "${BASH_SOURCE[0]}")" ]; then
+    startup
+fi

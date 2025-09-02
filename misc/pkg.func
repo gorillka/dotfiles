@@ -1,0 +1,37 @@
+# Guard clause to prevent multiple loading of this module
+[[ -n "${_PKG_FUNC_LOADED:-}" ]] && return
+_PKG_FUNC_LOADED=1
+
+get_list_pkg_name() {
+    local osType=$1
+    local isDefault="${2:-all}"
+    local pkgs=()
+
+    for file in config/*.conf; do
+        [ -f "$file" ] || continue
+
+        local osType=$(__to_upper "$osType")
+        local osSupperts=$(grep "^$osType=" "$file" | cut -d'=' -f2)
+
+        [ "$osSupperts" == "yes" ] || continue
+
+        if [ "$isDefault" == "all" ]; then
+            pkgs+=($(__name_from_file "$file"))
+            continue
+        fi
+
+        local default=$(grep "DEFAULT=" "$file" | cut -d'=' -f2)
+        [ "${default:-no}" = "$isDefault" ] && pkgs+=($(__name_from_file "$file"))
+    done
+
+    echo "${pkgs[@]}"
+}
+
+__to_upper() {
+    echo "$1" | tr '[:lower:]' '[:upper:]'
+}
+
+__name_from_file() {
+    local filename=$(basename "$1")
+    echo "${filename%.*}"
+}

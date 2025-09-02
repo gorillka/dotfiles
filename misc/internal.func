@@ -1,0 +1,12 @@
+# Source core functionality modules
+source $(dirname "${BASH_SOURCE[0]}")/core.func
+source $(dirname "${BASH_SOURCE[0]}")/msg.func
+load_core_func
+
+# Source build functionality modules
+source $(dirname "${BASH_SOURCE[0]}")/build.func
+load_build_func
+
+# Source additional utility modules
+source $(dirname "${BASH_SOURCE[0]}")/prompt.func
+source $(dirname "${BASH_SOURCE[0]}")/tools.func
