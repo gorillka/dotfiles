@@ -1,8 +1,6 @@
 
 install_macos() {
-    if [ ! command -v zsh &>/dev/null ]; then
-        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    fi
+    [ ! command -v zsh &>/dev/null ] && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 }
 
 install_linux() {
