@@ -7,7 +7,7 @@ get_list_pkg_name() {
     local isDefault="${2:-all}"
     local pkgs=()
 
-    for file in config/*.conf; do
+    for file in pkgs/*.conf; do
         [ -f "$file" ] || continue
 
         local osType=$(__to_upper "$osType")
