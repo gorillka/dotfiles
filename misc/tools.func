@@ -76,12 +76,14 @@ __create_symlinks() {
         # Check if the symbolic link already exists
         if [ -L "$target" ]; then
             msg_act "Symbolic link already exists: $target"
-            confirm_prompt "Do you want to replace it?" "Yes" "No" \
-                && rm -rf "$target"
+            confirm_prompt "Do you want to replace it?" \
+                && rm -rf "$target" \
+                || continue
         elif [ -f "$target" ]; then
             msg_act "File already exists: $target"
             confirm_prompt "Do you want to replace it?" "Yes" "No" \
-                && rm -rf "$target"
+                && rm -rf "$target" \
+                || continue
         fi
 
         # Extract the directory portion of the target path
