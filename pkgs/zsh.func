@@ -1,0 +1,8 @@
+
+install_macos() {
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+}
+
+install_linux() {
+    install_macos
+}
