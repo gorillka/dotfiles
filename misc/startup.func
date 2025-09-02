@@ -107,7 +107,12 @@ __install_custom_packages() {
 
     local choice=()
     choice=$(multi_select_prompt ${pkgs[@]})
-    install_pkg "${choice[@]}"
+    local pkgs=()
+    for pkg in $choice; do
+        pkgs+=($pkg)
+    done
+
+    install_pkg "${pkgs[@]}"
 }
 
 # Upgrade existing packages based on OS type
