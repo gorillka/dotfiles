@@ -79,9 +79,7 @@ __create_symlinks() {
             confirm_prompt "Do you want to replace it?" "Yes" "No" \
                 && $SUDO rm -rf "$target"
                 || continue
-        fi
-
-        if [ -f "$target" ]; then
+        elif [ -f "$target" ]; then
             msg_act "File already exists: $target"
             confirm_prompt "Do you want to replace it?" "Yes" "No" \
                 && $SUDO rm -rf "$target"
