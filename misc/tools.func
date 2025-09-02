@@ -77,12 +77,12 @@ __create_symlinks() {
         if [ -L "$target" ]; then
             msg_act "Symbolic link already exists: $target"
             confirm_prompt "Do you want to replace it?" "Yes" "No" \
-                && $SUDO rm -rf "$target"
+                && $SUDO rm -rf "$target" \
                 || continue
         elif [ -f "$target" ]; then
             msg_act "File already exists: $target"
             confirm_prompt "Do you want to replace it?" "Yes" "No" \
-                && $SUDO rm -rf "$target"
+                && $SUDO rm -rf "$target" \
                 || continue
         fi
 
