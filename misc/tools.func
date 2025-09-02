@@ -16,7 +16,7 @@ install_pkg() {
     local configPath=https://raw.githubusercontent.com/gorillka/dotfiles/${PROFILE}/pkgs
     local title
     if [ -d $configDir ]; then
-        title=$(grep "^TITLE=" "${configDir}/${1}.conf" | cut -d'=' -f2)
+        title=$(grep "^TITLE=" "${configDir}/${name}.conf" | cut -d'=' -f2)
     else
         title=$(curl -fsSL "${configPath}/${name}.conf" | grep "^TITLE=" | cut -d'=' -f2)
     fi
@@ -38,6 +38,67 @@ install_pkg() {
             ;;
     esac
     msg_ok "Installed: ${name}"
+
+    __create_symlinks "$name"
+}
+
+__create_symlinks() {
+    local name=$1
+    local configDir="${REPO_DIR}/pkgs"
+    local configPath=https://raw.githubusercontent.com/gorillka/dotfiles/${PROFILE}/pkgs
+    local configFile
+    if [ -d $configDir ]; then
+        configFile="${configDir}/${name}.conf"
+    else
+        configFile=<(curl -fsSL "${configPath}/${name}.conf")
+    fi
+
+    msg_act "Creating symbolic links..."
+
+    # Read dotfile links from the config file
+    while IFS=: read -r source target || [ -n "$source" ]; do
+
+        # Skip empty or invalid lines in the config file
+        if [[ -z "$source" || -z "$target" || "$source" == \#* ]]; then
+            continue
+        fi
+
+        # Evaluate variables
+        source=$(eval echo "$source")
+        target=$(eval echo "$target")
+
+        # Check if the source file exists
+        if [ ! -e "$source" ]; then
+            msg_warn "Error: Source file '$source' not found. Skipping link creation for '$target'."
+            continue
+        fi
+
+        # Check if the symbolic link already exists
+        if [ -L "$target" ]; then
+            msg_act "Symbolic link already exists: $target"
+            confirm_prompt "Do you want to replace it?" "Yes" "No" \
+                || continue
+        fi
+
+        if [ -f "$target" ]; then
+            msg_act "File already exists: $target"
+            confirm_prompt "Do you want to replace it?" "Yes" "No" \
+                || continue
+        fi
+
+        # Extract the directory portion of the target path
+        target_dir=$(dirname "$target")
+
+        # Check if the target directory exists, and if not, create it
+        if [ ! -d "$target_dir" ]; then
+            mkdir -p "$target_dir"
+            msg_act "Created directory: $target_dir"
+        fi
+
+        # Create the symbolic link
+        ln -s "$source" "$target"
+        msg_ok "Created symbolic link: $target"
+    done <"$configFile"
 }
 
 # ------------------------------------------------------------------------------

@@ -17,7 +17,7 @@ load_build_func() {
 __variables() {
     VERBOSE="${VERBOSE:-yes}"                                                          # Verbose mode flag, defaults to "no"
     OS_TYPE=""                                                                  # Operating system type (Linux/macOS)
-    PROFILE=${PROFILE:-prod}                                                   # Default profile to 'dev' if unset
+    PROFILE="${PROFILE:-main}"                                                   # Default profile to 'dev' if unset
     REPO_DIR_NAME=$([ "$PROFILE" == "prod" ] && echo ".dotfiles" || echo ".dotfiles_${PROFILE}")  # Repository directory name based on profile
     REPO_DIR="${HOME}/${REPO_DIR_NAME}"                                        # Full path to repository directory
     STD=$([ "$VERBOSE" == "yes" ] && STD="" || STD="silent" )                                                               # Standard output mode
