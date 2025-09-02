@@ -27,7 +27,6 @@ safe_source "https://raw.githubusercontent.com/gorillka/dotfiles/${PROFILE:-main
 safe_source "https://raw.githubusercontent.com/gorillka/dotfiles/${PROFILE:-main}/misc/build.func"
 
 # Load additional utility functions from remote repository
-safe_source "https://raw.githubusercontent.com/gorillka/dotfiles/${PROFILE:-main}/misc/tools.func"
 safe_source "https://raw.githubusercontent.com/gorillka/dotfiles/${PROFILE:-main}/misc/install.func"
 
 # Initialize core functions
