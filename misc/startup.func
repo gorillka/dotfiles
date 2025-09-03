@@ -112,7 +112,7 @@ __install_custom_packages() {
         pkgs+=($pkg)
     done
 
-    [ ! -z "$my_array" ] && install_pkg "${pkgs[@]}"
+    [ ! -z "$pkgs" ] && install_pkg "${pkgs[@]}"
 }
 
 # Upgrade existing packages based on OS type
