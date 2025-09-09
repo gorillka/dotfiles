@@ -74,3 +74,9 @@ data:
 git:
     autoCommit: {{ $personal }}
     autoPush: {{ $personal }}
+
+hooks:
+    read-source-state:
+        pre:
+            command:
+                "{{ .chezmoi.sourceDir }}/misc/.install-password-manager.sh"
