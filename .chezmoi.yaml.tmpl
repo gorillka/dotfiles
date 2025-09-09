@@ -1,0 +1,76 @@
+{{/* boolean feature tags */}}
+{{- $ephemeral := false -}}{{/* true if this machine is ephemeral, e.g. a cloud or VM instance */}}
+{{- $work := false -}}{{/* true if this machine is a work machine */}}
+{{- $headless := false -}}{{/* true if this machine does not have a screen and keyboard */}}
+{{- $personal := false -}}{{/* true if this machine should have personal secrets */}}
+{{- $kvm := false -}}{{/* true if this machine is Proxmox VM */}}
+{{- $lxc := false -}}{{/* true if this machine is Proxmox LXC */}}
+{{- "" -}}
+
+{{- $osID := .chezmoi.os -}}
+{{- if (and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id")) -}}
+    {{- $osID = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
+{{- end -}}
+
+{{/* detect GitHub codespaces, VSCode remote containers, Docker containers, Multipass VMs, and Vagrant boxes */}}
+{{- if or (env "CODESPACES") (env "REMOTE_CONTAINERS_IPC") (eq .chezmoi.username "root" "ubuntu" "vagrant" "vscode") -}}
+    {{- $ephemeral = true -}}
+    {{- $headless = true -}}
+{{- end -}}
+
+{{/* work around unreliable hostname on darwin */}}
+{{- $hostname := .chezmoi.hostname -}}
+{{- if eq .chezmoi.os "darwin" -}}
+    {{- $hostname := output "scutil" "--get" "LocalHostName" | trim -}}
+{{- end -}}
+
+{{- $machineTypes := list "server" "work" "home" -}}
+{{- if stdinIsATTY -}}
+    {{- $machineType := "" -}}
+    {{- $machineType = promptChoiceOnce . "machineType" "Choose a machine type" $machineTypes -}}
+    {{- if eq $machineType "server" -}}
+        {{- $containerTypes := list "VM" "LXC" -}}
+        {{- $containerType := promptChoiceOnce . "containerType" "Choose Proxmox container type" $containerTypes -}}
+        {{- $kvm = (eq $containerType "VM") -}}
+        {{- $lxc = (eq $containerType "LXC") -}}
+    {{- end -}}
+    {{- $personal = (eq $machineType "home") -}}
+    {{- $work = (eq $machineType "work") -}}
+{{- end -}}
+
+{{/* Figure out if we have Homebrew support (currently no support under Linux/arm) */}}
+{{- $homebrewSupported := true -}}
+{{- if (and (eq .chezmoi.arch "arm64") (eq .chezmoi.os "linux")) -}}
+  {{- $homebrewSupported = false -}}
+{{- else if stdinIsATTY -}}
+  {{ $homebrewSupported = promptBoolOnce . "homebrewSupported" "Do you want to install Homebrew" true }}
+{{/* No real reason to install Homebrew in something small like a dev container */}}
+{{- else if $ephemeral -}}
+  {{ $homebrewSupported = false }}
+{{- end -}}
+
+{{/* Personal info */}}
+{{- $email:= "a.orynko@gmail.com" -}}
+{{- $name:= "John (Gorilka) Doe" -}}
+
+{{- if $work -}}
+    {{- $email = promptStringOnce . "email" "Enter your work email" -}}
+    {{- $name = promptStringOnce . "name" "Enter your work name" $name -}}
+{{- end -}}
+
+{{/* Actual config */}}
+
+encryption: "age"
+age:
+  identity: "~/.config/chezmoi/key.txt"
+  recipient: "age1wezqjqwkkhdarxe5ayepw9kvkjm4t3lkjeffge5fft8j69c84smq2a6lmn"
+
+sourceDir: "{{ .chezmoi.sourceDir }}"
+
+data:
+
+    ephemeral: {{ $ephemeral }}
+
+git:
+    autoCommit: {{ $personal }}
+    autoPush: {{ $personal }}
