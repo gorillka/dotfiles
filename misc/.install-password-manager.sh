@@ -3,7 +3,7 @@
 # exit immediately if password-manager-binary is already in $PATH
 type bw >/dev/null 2>&1 && exit
 
-source $(dirname "${BASH_SOURCE[0]}")/.helper.sh
+source $HOME/$(dirname "${BASH_SOURCE[0]}")/.helper.sh
 
 __get_latest_version() {
     local latestVersion
