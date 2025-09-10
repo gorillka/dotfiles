@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # exit immediately if password-manager-binary is already in $PATH
-# type bw >/dev/null 2>&1 && exit
+type bw >/dev/null 2>&1 && exit
 
 source $(dirname "${BASH_SOURCE[0]}")/.helper.sh
 
@@ -55,7 +55,7 @@ install_latel_version() {
         fi
     fi
 
-    unzip -o $name -d $tmpDir
+    tar -xzf $name -C $tmpDir
     $SUDO install ${tmpDir}/bw /usr/local/bin
     rm $tmpDir/bw*
 }
