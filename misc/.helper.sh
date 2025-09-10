@@ -1,3 +1,12 @@
+#!/usr/bin/env bash
+# ------------------------------------------------------------------------------
+# Core Functions Library - Prevents multiple loading of core functionality
+# ------------------------------------------------------------------------------
+
+# Guard clause to prevent multiple loading of this module
+[[ -n "${_CORE_FUNC_LOADED:-}" ]] && return
+_CORE_FUNC_LOADED=1
+
 # ------------------------------------------------------------------------------
 # Loads all core functions required by the script
 # Initializes colors and icons for consistent output formatting
@@ -7,6 +16,7 @@ __load_core_func() {
     [[ -n "${__CORE_FUNCTIONS_LOADED:-}" ]] && return
     __CORE_FUNCTIONS_LOADED=1
 
+    __variables
     # Initialize color definitions
     __colors
 
@@ -14,6 +24,13 @@ __load_core_func() {
     __icons
 
     __catch_errors
+    __override_sudo
+}
+
+# Initialize global variables used throughout the script
+__variables() {
+    MSG_INFO_SHOWN=" "                                                         # Flag to track if info message was shown
+    SUDO=""
 }
 
 # ------------------------------------------------------------------------------
@@ -282,6 +299,16 @@ fatal() {
 
     # Send interrupt signal to current process for clean termination
     kill -INT $$
+}
+
+# Configure sudo behavior based on user privileges and system availability
+__override_sudo() {
+    if [ "$USER" = "root" ] || [ ! command -v sudo &>/dev/null ]; then
+        SUDO=                                      # Remove sudo if running as root or sudo not available
+    else
+        SUDO=sudo                               # Preserve environment variables with sudo
+        eval "$SUDO --validate"                                    # Validate/refresh sudo credentials
+    fi
 }
 
 # Find brew
