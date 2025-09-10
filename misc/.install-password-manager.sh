@@ -44,7 +44,7 @@ install_latel_version() {
     local tmpDir=/tmp
     local name="${tmpDir}/bw-${latestVersion}.zip"
 
-    if [ ! -f $name ]; then
+    if [ ! -f "$name" ]; then
         if command -v curl >/dev/null 2>&1; then
             curl -Lo $name $sourceUrl
         elif command -v wget >/dev/null 2>&1; then
@@ -57,7 +57,7 @@ install_latel_version() {
 
     unzip -o $name -d $tmpDir
     $SUDO install ${tmpDir}/bw /usr/local/bin
-    # rm $tmpDir/bw*
+    rm $tmpDir/bw*
 }
 
 install_latel_version
