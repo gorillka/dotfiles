@@ -23,7 +23,6 @@ __load_core_func() {
     # Initialize icon definitions
     __icons
 
-    __catch_errors
     __override_sudo
 }
 
@@ -63,22 +62,6 @@ __icons() {
     SKIP="${MAGENTA}---${END}"      # Skipped operation
     WARNING="${YELLOW}!!!${END}"    # Warning message
     ERROR="${RED}>-<${END}"         # Error message
-}
-
-# This function is called when an error occurs. It receives the exit code, line number, and command that caused the error, and displays an error message.
-__error_handler() {
-    printf "\e[?25h"                                        # Show cursor
-    local exit_code="$?"                                    # Capture exit code
-    local line_number="$1"                                  # Line number where error occurred
-    local command="$2"                                      # Command that caused the error
-    local error_message="${RED}[ERROR]${END} in line ${RED}$line_number${END}: exit code ${RED}$exit_code${END}: while executing command ${YELLOW}$command${END}"
-    echo -e "\n$error_message\n"                            # Display fatal error message
-}
-
-# This function enables error handling in the script by setting options and defining a trap for the ERR signal.
-__catch_errors() {
-    set -Eeuo pipefail                                      # Enable strict error handling
-    trap '__error_handler $LINENO "$BASH_COMMAND"' ERR       # Set trap for error handling
 }
 
 #==============================================================================

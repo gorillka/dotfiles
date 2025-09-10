@@ -55,7 +55,7 @@ install_latel_version() {
         fi
     fi
 
-    tar -xzf $name -C $tmpDir
+    unzip -o $name -d $tmpDir
     $SUDO install ${tmpDir}/bw /usr/local/bin
     rm $tmpDir/bw*
 }
