@@ -1,7 +1,9 @@
 #!/bin/sh
 
 # exit immediately if password-manager-binary is already in $PATH
-type bw >/dev/null 2>&1 && exit
+# type bw >/dev/null 2>&1 && exit
+
+source {{ .chezmoi.sourceDir }}/misc/.helper.sh
 
 __get_latest_version() {
     local latestVersion
@@ -42,25 +44,20 @@ install_latel_version() {
     local tmpDir=/tmp
     local name="${tmpDir}/bw-${latestVersion}.zip"
 
-    if command -v curl >/dev/null 2>&1; then
-        curl -Lo $name $sourceUrl
-    elif command -v wget >/dev/null 2>&1; then
-        wget -p $name $sourceUrl
-    else
-        echo "Unable to find curl or wget."
-        exit 1
+    if [ ! -f $name ]; then
+        if command -v curl >/dev/null 2>&1; then
+            curl -Lo $name $sourceUrl
+        elif command -v wget >/dev/null 2>&1; then
+            wget -p $name $sourceUrl
+        else
+            echo "Unable to find curl or wget."
+            exit 1
+        fi
     fi
 
     unzip -o $name -d $tmpDir
-    SUDO=
-    if [ "$USER" = "root" ] || [ ! command -v sudo &>/dev/null ]; then
-        SDUO=
-    else
-        SUDO=sudo
-    fi
-
     $SUDO install ${tmpDir}/bw /usr/local/bin
-    rm $tmpDir/bw*
+    # rm $tmpDir/bw*
 }
 
 install_latel_version
