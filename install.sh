@@ -13,6 +13,12 @@ if [ ! "$(command -v chezmoi)" ]; then
       echo "To install chezmoi, you must have curl or wget installed." >&2
       exit 1
     fi
+
+    if [ "$(command -v sudo)" ]; then
+        sudo install $chezmoi /usr/local/bin
+    else
+        install $chezmoi /usr/local/bin
+    fi
 fi
 
 # POSIX way to get script's dir: https://stackoverflow.com/a/29834779/12156188
