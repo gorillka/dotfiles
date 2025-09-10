@@ -1,0 +1,9 @@
+#!/bin/sh
+
+{{ if eq .chezmoi.os "darwin" -}}
+    echo Darwin
+{{ end -}}
+
+{{ if eq .chezmoi.os "linux" -}}
+    echo Linux
+{{ end -}}

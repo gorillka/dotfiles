@@ -68,8 +68,21 @@ age:
 sourceDir: "{{ .chezmoi.sourceDir }}"
 
 data:
+    hostname: {{ $hostname | quote }}
+    osid: {{ $osID | quote }}
+
+    name: {{ $name | quote }}
+    email: {{ $email | quote }}
+
+    personal: {{ $personal }}
+    work: {{ $work }}
 
     ephemeral: {{ $ephemeral }}
+    headless: {{ $headless }}
+    homebrewSupported: {{ $homebrewSupported }}
+
+    kvm: {{ $kvm }}
+    lxc: {{ $lxc }}
 
 git:
     autoCommit: {{ $personal }}
