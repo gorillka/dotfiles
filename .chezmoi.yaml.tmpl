@@ -50,8 +50,13 @@
 {{- end -}}
 
 {{/* Personal info */}}
-{{- $email:= "a.orynko@gmail.com" -}}
-{{- $name:= "John (Gorilka) Doe" -}}
+{{- $email := "a.orynko@gmail.com" -}}
+{{- $name := "John (Gorilka) Doe" -}}
+
+{{- $autoUnlock := false -}}
+{{- if $personal -}}
+    {{- $autoUnlock = "auto" -}}
+{{- end -}}
 
 {{- if $work -}}
     {{- $email = promptStringOnce . "email" "Enter your work email" -}}
@@ -88,8 +93,12 @@ git:
     autoCommit: {{ $personal }}
     autoPush: {{ $personal }}
 
+{{- if $personal -}}
 hooks:
     read-source-state:
         pre:
             command:
                 "{{ .chezmoi.sourceDir }}/misc/.install-password-manager.sh"
+bitwarden:
+    unlock = {{ $autoUnlock }}
+{{- end -}}

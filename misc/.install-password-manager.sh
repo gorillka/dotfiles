@@ -58,6 +58,7 @@ install_latel_version() {
     unzip -o $name -d $tmpDir
     $SUDO install ${tmpDir}/bw /usr/local/bin
     rm $tmpDir/bw*
+    bw config server https://vault.gorilka.com
 }
 
 install_latel_version
