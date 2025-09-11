@@ -132,7 +132,7 @@ __msg_general() {
     local message="$2"
 
     # Print formatted message with action symbol
-    printf "%s %b\n" "$action" "$message"
+    printf "%s %b\n\n" "$action" "$message"
 }
 
 #------------------------------------------------------------------------------

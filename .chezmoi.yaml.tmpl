@@ -93,12 +93,13 @@ git:
     autoCommit: {{ $personal }}
     autoPush: {{ $personal }}
 
-{{- if $personal -}}
+{{- if $personal }}
+
 hooks:
     read-source-state:
         pre:
             command:
                 "{{ .chezmoi.sourceDir }}/misc/.install-password-manager.sh"
 bitwarden:
-    unlock = {{ $autoUnlock }}
-{{- end -}}
+    unlock: {{ $autoUnlock }}
+{{- end }}

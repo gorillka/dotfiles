@@ -2,7 +2,7 @@
 source {{ .chezmoi.sourceDir }}/misc/.helper.sh
 
 {{ if not .homebrewSupported }}
-  msg_warn "Homebrew is not supported on this platform"
+  msg_warn "Homebrew is not supported on this platform\"
   exit 0
 {{ end }}
 
