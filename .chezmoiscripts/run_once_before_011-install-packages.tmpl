@@ -2,9 +2,9 @@
 source {{ .chezmoi.sourceDir }}/misc/.helper.sh
 
 {{ if eq .chezmoi.os "darwin" -}}
-    brew install jq
+
 {{ end -}}
 
 {{ if eq .chezmoi.os "linux" -}}
-    $SUDO apt install jq -y
+
 {{ end -}}
