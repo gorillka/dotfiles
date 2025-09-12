@@ -21,6 +21,7 @@ Host {{ .name }}
 	HostName {{ .uri }}
 			{{- end }}
 		{{- end }}
+	IdentityFile ~/.ssh/id_skylab
 		{{- if $isDarwin }}
    	AddKeysToAgent yes
         {{- end }}
