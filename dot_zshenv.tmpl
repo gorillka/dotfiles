@@ -1,5 +1,3 @@
-[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
-
 # Secrets
 [ -f "$HOME/.env" ] && source "$HOME/.env"
 
@@ -20,4 +18,6 @@ export PATH="/usr/local/bin:$PATH"
 export DEFAULT_USER="$(whoami)"
 export XDG_CONFIG_HOME=$HOME/.config
 
-export SSH_AUTH_SOCK=/Users/gorilka/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock
+{{ if eq .chezmoi.os "darwin" -}}
+export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
+{{ end -}}
