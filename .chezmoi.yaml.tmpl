@@ -89,6 +89,12 @@ data:
     kvm: {{ $kvm }}
     lxc: {{ $lxc }}
 
+    zshPlugins:
+        - per-directory-history
+        - zsh-syntax-highlighting
+        - zsh-autosuggestions
+        - fzf-tab
+
 git:
     autoCommit: {{ $personal }}
     autoPush: {{ $personal }}

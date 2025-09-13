@@ -1,0 +1,68 @@
+# Set Up Command History
+# ------------------------------------------------------------------------------
+## Enable globally shared history (same history in every shell)
+setopt SHARE_HISTORY
+
+## When writing out the history file, older duplicate commands are omitted
+setopt HIST_SAVE_NO_DUPS
+
+## Don't save commands prefixed with at least one space to history
+setopt HIST_IGNORE_SPACE
+
+## Don't directly execute commands when using history expansion
+setopt HIST_VERIFY
+
+## Max number of history lines in memory
+HISTSIZE=25000
+
+# Set up history file
+if [[ ! -d "$XDG_DATA_HOME/zsh" ]]; then
+  mkdir -p "$XDG_DATA_HOME/zsh"
+fi
+HISTFILE="$XDG_DATA_HOME/zsh/history"
+
+## Max number of history lines saved in history file
+SAVEHIST=200000
+
+# Set Up Completion
+# ------------------------------------------------------------------------------
+# Problems with insecure directories under macOS?
+# -> see https://stackoverflow.com/a/13785716/149220 for a solution
+CACHE_DIRECTORY="$XDG_CACHE_HOME/zsh"
+
+## Use cache
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$CACHE_DIRECTORY/completion-cache"
+
+## These were created by `compinstall`
+zstyle ':completion:*' completer _complete _ignored _approximate
+zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]} r:|[._-]=* r:|=*' 'm:{[:lower:]}={[:upper:]}' 'm:{[:lower:]}={[:upper:]}' 'm:{[:lower:]}={[:upper:]}'
+zstyle ':completion:*' max-errors 2
+zstyle :compinstall filename "$ZDOTDIR/.zshrc"
+zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+
+## Initialize completion system
+### Set location for compinit's dumpfile.
+autoload -Uz compinit && compinit -d "$CACHE_DIRECTORY/compinit-dumpfile"
+
+# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(
+{{- range .zshPlugins }}
+  {{ . }}
+{{- end }}
+)
+
+source $ZSH/oh-my-zsh.sh
+
+{{- if lookPath "starship" }}
+eval "$(starship init zsh)"
+{{- end }}
+{{- if lookPath "zoxide" }}
+eval "$(zoxide init zsh)"
+{{- end }}
+{{- if lookPath "fzf" }}
+source <(fzf --zsh)
+{{- end }}

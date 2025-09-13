@@ -1,10 +1,13 @@
 # Secrets
 [ -f "$HOME/.env" ] && source "$HOME/.env"
 
-# Hide computer name in terminal
-export DEFAULT_USER="$(whoami)"
 export XDG_DATA_HOME=$HOME/.local/share
 export XDG_CONFIG_HOME=$HOME/.config
+export XDG_STATE_HOME=$HOME/.local/state
+export XDG_CACHE_HOME=$HOME/.cache
+
+# Hide computer name in terminal
+export DEFAULT_USER="$(whoami)"
 
 # If you come from bash you might have to change your $PATH.
 {{- $paths := list -}}
@@ -18,7 +21,7 @@ export XDG_CONFIG_HOME=$HOME/.config
     {{- if stat $path -}}
         {{- $paths = mustAppend $paths $path -}}
     {{- end -}}
-{{- end -}}
+{{- end }}
 export PATH={{ toStrings $paths | join ":" }}:$PATH
 {{- end }}
 
@@ -57,3 +60,35 @@ export GITHUB_ACCESS_TOKEN={{ .value | trim }}
 {{- if .personal -}}
 export CHEZMOI_GITHUB_ACCESS_TOKEN=$GITHUB_ACCESS_TOKEN
 {{- end }}
+
+# fzf
+# ------------------------------------------------------------------------------
+{{ if lookPath "fzf" -}}
+source <(fzf --zsh)
+
+export FZF_CTRL_R_OPTS="
+--color header:italic
+--height=80%
+--bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'
+--header 'CTRL-Y: Copy command into clipboard, CTRL-/: Toggle line wrapping, CTRL-R: Toggle sorting by relevance'
+"
+    {{ if lookPath "bat" -}}
+export FZF_CTRL_T_OPTS="
+--walker-skip .git,node_modules,target
+--preview 'bat -n --color=always {}'
+--height=80%
+--bind 'ctrl-/:change-preview-window(down|hidden|)'
+--header 'CTRL-/: Toggle preview window position'
+"
+    {{ end -}}
+
+    {{ if lookPath "tree" -}}
+export FZF_ALT_C_OPTS="
+--walker-skip .git,node_modules,target
+--preview 'tree -C {}'
+--height=80%
+--bind 'ctrl-/:change-preview-window(down|hidden|)'
+--header 'CTRL-/: Toggle preview window position'
+"
+    {{ end -}}
+{{ end -}}

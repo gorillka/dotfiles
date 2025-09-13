@@ -32,3 +32,14 @@ copy-on-select = clipboard
 
 keybind = super+i=inspector:toggle
 keybind = global:super+§=toggle_quick_terminal
+
+{{ if lookPath "fzf" -}}
+keybind = super+r=text:\x12
+{{	if lookPath "bat" -}}
+keybind = super+t=text:\x14
+{{	end -}}
+
+{{ 	if lookPath "tree" -}}
+keybind = alt+c=text:\x1bc
+{{	end -}}
+{{ end -}}

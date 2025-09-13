@@ -1,0 +1,31 @@
+{{- if .personal -}}
+	{{- $isDarwin := (eq .chezmoi.os "darwin") -}}
+	{{- $orgId := (bitwarden "organization" "SkyLab").id -}}
+	{{- $collectionId := (secretJSON "get" "collection" "ssh" "--organizationid" $orgId).id -}}
+	{{- $items := (secretJSON "list" "items" "--collectionid" $collectionId) -}}
+	{{- $folderIds := list -}}
+	{{- range $items -}}
+		{{- $folderIds = mustAppend $folderIds .folderId -}}
+	{{- end -}}
+	{{- range ($folderIds | sortAlpha | uniq) }}
+		{{- $folderName := (bitwarden "folder" .).name -}}
+		{{- $folderName = (regexReplaceAll "^.*/" $folderName "") -}}
+#SCE_GROUP:{{ . }}:::{{ $folderName }}
+{{ "" -}}
+	{{- end -}}
+	{{- range $items }}
+Host {{ .name }}
+	User {{ .login.username }}
+		{{- range .login.uris }}
+			{{- if .uri }}
+	HostName {{ .uri }}
+			{{- end }}
+		{{- end }}
+	IdentityFile ~/.ssh/id_skylab
+		{{- if $isDarwin }}
+   	AddKeysToAgent yes
+        {{- end }}
+    #SCEGroup {{ .folderId }}
+{{ "" -}}
+	{{- end -}}
+{{- end -}}
