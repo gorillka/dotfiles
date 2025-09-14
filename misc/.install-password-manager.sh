@@ -3,7 +3,15 @@
 # exit immediately if password-manager-binary is already in $PATH
 type bw >/dev/null 2>&1 && exit
 
-source $HOME/$(dirname "${BASH_SOURCE[0]}")/.helper.sh
+# Configure sudo behavior based on user privileges and system availability
+__override_sudo() {
+    if [ "$USER" = "root" ] || [ ! command -v sudo &>/dev/null ]; then
+        SUDO=                                      # Remove sudo if running as root or sudo not available
+    else
+        SUDO=sudo                               # Preserve environment variables with sudo
+        eval "$SUDO --validate"                                    # Validate/refresh sudo credentials
+    fi
+}
 
 __get_latest_version() {
     local latestVersion
@@ -62,4 +70,5 @@ install_latel_version() {
     export BW_SESSION=$(bw unlock --raw)
 }
 
+__override_sudo
 install_latel_version
