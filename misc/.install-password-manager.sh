@@ -1,11 +1,8 @@
 #!/bin/sh
 
-# exit immediately if password-manager-binary is already in $PATH
-type bw >/dev/null 2>&1 && exit
-
 # Configure sudo behavior based on user privileges and system availability
 __override_sudo() {
-    if [ "$USER" = "root" ] || [ ! command -v sudo &>/dev/null ]; then
+    if ! command -v sudo &>/dev/null; then
         SUDO=                                      # Remove sudo if running as root or sudo not available
     else
         SUDO=sudo                               # Preserve environment variables with sudo
@@ -66,9 +63,19 @@ install_latel_version() {
     unzip -o $name -d $tmpDir
     $SUDO install ${tmpDir}/bw /usr/local/bin
     rm $tmpDir/bw*
-    bw config server https://vault.gorilka.com
-    export BW_SESSION=$(bw unlock --raw)
 }
+
+setup_bitwarden() {
+    bw logout
+    bw config server https://vault.gorilka.com
+    eval export BW_SESSION=$(bw login --raw)
+}
+
+# exit immediately if password-manager-binary is already in $PATH
+if type bw >/dev/null 2>&1; then
+    setup_bitwarden
+    exit
+fi
 
 __override_sudo
 install_latel_version
