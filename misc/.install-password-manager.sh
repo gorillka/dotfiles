@@ -59,6 +59,7 @@ install_latel_version() {
     $SUDO install ${tmpDir}/bw /usr/local/bin
     rm $tmpDir/bw*
     bw config server https://vault.gorilka.com
+    export BW_SESSION=$(bw unlock --raw)
 }
 
 install_latel_version
