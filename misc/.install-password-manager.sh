@@ -66,9 +66,9 @@ install_latel_version() {
 }
 
 setup_bitwarden() {
-    bw logout
+    bw login
     bw config server https://vault.gorilka.com
-    eval export BW_SESSION=$(bw login --raw)
+    export BW_SESSION=$(bw unlock --raw)
 }
 
 # exit immediately if password-manager-binary is already in $PATH

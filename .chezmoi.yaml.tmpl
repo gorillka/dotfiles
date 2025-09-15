@@ -29,7 +29,7 @@
     {{- $machineType := "" -}}
     {{- $machineType = promptChoiceOnce . "machineType" "Choose a machine type" $machineTypes -}}
     {{- if eq $machineType "server" -}}
-        {{- $containerTypes := list "VM" "LXC" -}}
+        {{- $containerTypes := list "VM" "LXC" "none" -}}
         {{- $containerType := promptChoiceOnce . "containerType" "Choose Proxmox container type" $containerTypes -}}
         {{- $kvm = (eq $containerType "VM") -}}
         {{- $lxc = (eq $containerType "LXC") -}}
@@ -99,16 +99,17 @@ git:
     autoCommit: {{ $personal }}
     autoPush: {{ $personal }}
 
-{{- if $personal }}
+{{- if or ($personal) ($work) }}
 
 hooks:
     read-source-state:
         pre:
             command:
                 "{{ .chezmoi.sourceDir }}/misc/.install-password-manager.sh"
-bitwarden:
-    unlock: {{ $autoUnlock }}
-{{- end }}
 
 secret:
     command: "bw"
+
+bitwarden:
+    unlock: {{ $autoUnlock }}
+{{- end }}
