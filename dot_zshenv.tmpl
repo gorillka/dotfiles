@@ -14,7 +14,6 @@ export DEFAULT_USER="$(whoami)"
 {{- if stat "/opt/homebrew/bin" -}}
     {{- $paths = mustAppend $paths "/opt/homebrew/bin" -}}
 {{- end -}}
-{{- if $paths }}
 {{- $homeDir := .chezmoi.homeDir -}}
 {{- range $_, $relPath := list "bin" "go/bin" ".cargo/bin" ".local/bin" -}}
     {{- $path := joinPath $homeDir $relPath -}}
@@ -22,6 +21,7 @@ export DEFAULT_USER="$(whoami)"
         {{- $paths = mustAppend $paths $path -}}
     {{- end -}}
 {{- end }}
+{{- if $paths }}
 export PATH={{ toStrings $paths | join ":" }}:$PATH
 {{- end }}
 

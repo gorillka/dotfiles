@@ -34,7 +34,7 @@
         {{- $containerType := promptChoiceOnce . "containerType" "Choose Proxmox container type" $containerTypes -}}
         {{- $kvm = (eq $containerType "VM") -}}
         {{- $lxc = (eq $containerType "LXC") -}}
-        {{- $dockerSupported := promptBoolOnce . "dockerSupported" "Do you want to install Docker?" false -}}
+        {{- $dockerSupported := promptBoolOnce . "dockerSupported" "Do you want to install Docker" false -}}
     {{- end -}}
     {{- $personal = (eq $machineType "home") -}}
     {{- $work = (eq $machineType "work") -}}
@@ -91,7 +91,7 @@ git:
   autoCommit: {{ $personal }}
   autoPush: {{ $personal }}
 
-{{ if not $ephemeral -}}
+{{ if $personal -}}
 hooks:
   init:
     post:

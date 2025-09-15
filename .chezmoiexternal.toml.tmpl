@@ -1,4 +1,4 @@
-{{- if eq .chezmoi.os " linux" }}
+{{- if eq .chezmoi.os "linux" }}
 
 [".local/bin/eza"]
     type = "archive-file"
@@ -22,7 +22,7 @@
     type = "archive-file"
     url = {{ gitHubLatestReleaseAssetURL "jesseduffield/lazygit" "lazygit_0.55.0_linux_x86_64.tar.gz" | quote }}
     executable = true
-    path = "lazygit_0.55.0_linux_x86_64/lazygit"
+    path = "lazygit"
 
     {{- if .dockerSupported }}
 [".local/bin/lazydocker"]
