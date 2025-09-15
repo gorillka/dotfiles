@@ -15,8 +15,10 @@ if [ ! "$(command -v chezmoi)" ]; then
     fi
 
     if [ "$(command -v sudo)" ]; then
+        [ ! -d "/usr/local/bin" ] && sudo mkdir -p /usr/local/bin
         sudo install $chezmoi /usr/local/bin
     else
+        [ ! -d "/usr/local/bin" ] && mkdir -p /usr/local/bin
         install $chezmoi /usr/local/bin
     fi
     rm $chezmoi

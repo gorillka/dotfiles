@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+{{ $brews := list
+ 	"age"
+    "bat"
+    "btop"
+    "curl"
+    "eza"
+    "fd"
+    "fzf"
+    "git"
+    "git-lfs"
+    "gnu-units"
+    "gnupg"
+    "jq"
+    "ripgrep"
+    "tmux"
+    "tpm"
+    "wget"
+    "mas"
+    "lazygit"
+    "ffmpeg"
+    "neovim"
+-}}
+{{ $casks := list
+	"ghostty"
+	"zed"
+	"raycast"
+-}}
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+brew bundle --file=/dev/stdin <<EOF
+{{ range ($brews | sortAlpha | uniq) -}}
+brew "{{ . }}"
+{{ end -}}
+{{ range ($casks | sortAlpha | uniq) -}}
+cask "{{ . }}"
+{{ end -}}
+EOF

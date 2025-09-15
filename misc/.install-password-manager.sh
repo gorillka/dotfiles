@@ -61,6 +61,9 @@ install_latel_version() {
     fi
 
     unzip -o $name -d $tmpDir
+    if [ ! -d "/usr/local/bin" ]; then
+        $SUDO mkdir -p /usr/local/bin
+    fi
     $SUDO install ${tmpDir}/bw /usr/local/bin
     rm $tmpDir/bw*
     setup_bitwarden

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+source {{ .chezmoi.sourceDir }}/misc/.helper.sh
+
+msg_spin "Setting up Homebrew"
+
+find_brew
+
+if command -v ${BREW_PATH} &> /dev/null; then
+    msg_skip "Homebrew is already installed"
+    exit 0
+fi
+
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+if [ $? -ne 0 ]; then
+    fatal "Failed to install Homebrew"
+fi
+
+msg_ok "Homebrew setup completed"
