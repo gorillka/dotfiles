@@ -1,3 +1,39 @@
+{{- if eq .chezmoi.os " linux" }}
+
+[".local/bin/eza"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "eza-community/eza" "eza_x86_64-unknown-linux-gnu.tar.gz" | quote }}
+    executable = true
+    path = "./eza"
+
+[".local/bin/yazi"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "sxyazi/yazi" "yazi-x86_64-unknown-linux-gnu.zip" | quote }}
+    executable = true
+    path = "yazi-x86_64-unknown-linux-gnu/yazi"
+
+[".local/bin/nvim"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "neovim/neovim" "nvim-linux-x86_64.tar.gz" | quote }}
+    executable = true
+    path = "nvim-linux-x86_64/bin/nvim"
+
+[".local/bin/lazygit"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "jesseduffield/lazygit" "lazygit_0.55.0_linux_x86_64.tar.gz" | quote }}
+    executable = true
+    path = "lazygit_0.55.0_linux_x86_64/lazygit"
+
+    {{- if .dockerSupported }}
+[".local/bin/lazydocker"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "jesseduffield/lazydocker" "lazydocker_0.24.1_Linux_x86.tar.gz" | quote }}
+    executable = true
+    path = "lazydocker_0.24.1_Linux_x86/lazydocker"
+    {{- end }}
+
+{{- end }}
+
 [".oh-my-zsh"]
     type = "archive"
     url = "https://github.com/ohmyzsh/ohmyzsh/archive/master.tar.gz"

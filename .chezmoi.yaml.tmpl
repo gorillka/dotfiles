@@ -5,6 +5,7 @@
 {{- $personal := false -}}{{/* true if this machine should have personal secrets */}}
 {{- $kvm := false -}}{{/* true if this machine is Proxmox VM */}}
 {{- $lxc := false -}}{{/* true if this machine is Proxmox LXC */}}
+{{- $dockerSupported := false -}}
 {{- "" -}}
 
 {{- $osID := .chezmoi.os -}}
@@ -33,20 +34,10 @@
         {{- $containerType := promptChoiceOnce . "containerType" "Choose Proxmox container type" $containerTypes -}}
         {{- $kvm = (eq $containerType "VM") -}}
         {{- $lxc = (eq $containerType "LXC") -}}
+        {{- $dockerSupported := promptBoolOnce . "dockerSupported" "Do you want to install Docker?" false -}}
     {{- end -}}
     {{- $personal = (eq $machineType "home") -}}
     {{- $work = (eq $machineType "work") -}}
-{{- end -}}
-
-{{/* Figure out if we have Homebrew support (currently no support under Linux/arm) */}}
-{{- $homebrewSupported := true -}}
-{{- if (and (eq .chezmoi.arch "arm64") (eq .chezmoi.os "linux")) -}}
-  {{- $homebrewSupported = false -}}
-{{- else if stdinIsATTY -}}
-  {{ $homebrewSupported = promptBoolOnce . "homebrewSupported" "Do you want to install Homebrew" true }}
-{{/* No real reason to install Homebrew in something small like a dev container */}}
-{{- else if $ephemeral -}}
-  {{ $homebrewSupported = false }}
 {{- end -}}
 
 {{/* Personal info */}}
@@ -84,10 +75,11 @@ data:
 
   ephemeral: {{ $ephemeral }}
   headless: {{ $headless }}
-  homebrewSupported: {{ $homebrewSupported }}
 
   kvm: {{ $kvm }}
   lxc: {{ $lxc }}
+
+  dockerSupported: {{ $dockerSupported }}
 
   zshPlugins:
     - per-directory-history

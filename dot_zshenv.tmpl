@@ -49,7 +49,7 @@ fi
 {{ if eq .chezmoi.os "darwin" }}
 export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
 {{ end -}}
-{{ if not .ephemeral -}}
+{{ if and (.personal) (not .ephemeral) -}}
     {{- $itemName := printf "github.com (%s)" .name }}
     {{- range (bitwarden "item" $itemName).fields }}
         {{- if eq .name "API Token" }}
