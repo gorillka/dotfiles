@@ -22,5 +22,6 @@ if [ ! "$(command -v chezmoi)" ]; then
     rm $chezmoi
 fi
 
-exec "chezmoi" init gorillka
-source ${HOME}/.local/share/chezmoi/setup.sh
+chezmoi init gorillka
+cd ${HOME}/.local/share/chezmoi
+./setup.sh
