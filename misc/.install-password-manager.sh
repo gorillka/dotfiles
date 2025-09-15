@@ -63,17 +63,16 @@ install_latel_version() {
     unzip -o $name -d $tmpDir
     $SUDO install ${tmpDir}/bw /usr/local/bin
     rm $tmpDir/bw*
+    setup_bitwarden
 }
 
 setup_bitwarden() {
-    bw login
     bw config server https://vault.gorilka.com
-    export BW_SESSION=$(bw unlock --raw)
+    bw login
 }
 
 # exit immediately if password-manager-binary is already in $PATH
 if type bw >/dev/null 2>&1; then
-    setup_bitwarden
     exit
 fi
 
