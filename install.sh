@@ -21,8 +21,3 @@ if [ ! "$(command -v chezmoi)" ]; then
     fi
     rm $chezmoi
 fi
-
-# POSIX way to get script's dir: https://stackoverflow.com/a/29834779/12156188
-script_dir="$(cd -P -- "$(dirname -- "$(command -v -- "$0")")" && pwd -P)"
-# exec: replace current process with chezmoi init
-exec "chezmoi" init --source=${script_dir} gorillka

@@ -1,7 +1,7 @@
 {{/* boolean feature tags */}}
 {{- $ephemeral := false -}}{{/* true if this machine is ephemeral, e.g. a cloud or VM instance */}}
-{{- $work := false -}}{{/* true if this machine is a work machine */}}
 {{- $headless := false -}}{{/* true if this machine does not have a screen and keyboard */}}
+{{- $work := false -}}{{/* true if this machine is a work machine */}}
 {{- $personal := false -}}{{/* true if this machine should have personal secrets */}}
 {{- $kvm := false -}}{{/* true if this machine is Proxmox VM */}}
 {{- $lxc := false -}}{{/* true if this machine is Proxmox LXC */}}
@@ -11,6 +11,11 @@
 {{- $osID := .chezmoi.os -}}
 {{- if (and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id")) -}}
     {{- $osID = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
+{{- end -}}
+
+{{- $osVersion := "" -}}
+{{- if (and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "versionID")) -}}
+    {{- $osVersion = .chezmoi.osRelease.versionID -}}
 {{- end -}}
 
 {{/* detect GitHub codespaces, VSCode remote containers, Docker containers, Multipass VMs, and Vagrant boxes */}}
@@ -66,6 +71,7 @@ sourceDir: "{{ .chezmoi.sourceDir }}"
 data:
   hostname: {{ $hostname | quote }}
   osid: {{ $osID | quote }}
+  osVersion: {{ $osVersion | quote }}
 
   name: {{ $name | quote }}
   email: {{ $email | quote }}
