@@ -23,4 +23,4 @@ if [ ! "$(command -v chezmoi)" ]; then
 fi
 
 exec "chezmoi" init gorillka
-bash ${HOME}/.local/share/chezmoi/setup.sh
+.${HOME}/.local/share/chezmoi/setup.sh
