@@ -1,5 +1,344 @@
+# By default tmux starts a login shell which runs your profile each time you
+# open a pane or window. This disables that to prevent your profile script from
+# running many times instead of once. This can be problematic when you start
+# a window manager from your profile (you don't want multiples of them).
+set -g default-command "${SHELL}"
+# set shell
+set -g default-shell "${SHELL}"
+
+# Undercurl support (works with kitty)
+# Fix found below in Folke's tokyonight theme :heart:
+# https://github.com/folke/tokyonight.nvim#fix-undercurls-in-tmux
+#
+# After reloading the configuration, you also have to kill the tmux session for
+# these changes to take effect
+set -g default-terminal "${TERM}"
+
+# I was getting this warning in neovim
+# Neither Tc nor RGB capability set. True colors are disabled
+# Confirm your $TERM value outside of tmux first, mine returned "screen-256color"
+# echo $TERM
+# set-option -sa terminal-features ',xterm-256color:RGB'
+set -sg terminal-overrides ",*:RGB"
+
+# Allow opening multiple terminals to view the same session at different sizes.
+setw -g aggressive-resize on
+
+# I had to set this to on for osc52 to work
+# https://github.com/ojroques/nvim-osc52
+set -s set-clipboard on
+
+# Enables tracking of focus events, allows tmux to respond when the terminal
+# window gains or looses focus
+set-option -g focus-events on
+
+# If I'm in insert mode typing text, and press escape, it will wait this amount
+# of time to switch to normal mode when I press escape
+# this setting was recommended by neovim `escape-time` (default 500)
+# Can be set to a lower value, like 10 for it to be faster
+set-option -sg escape-time 100
+
+# Status
+set -g detach-on-destroy off    # don't exit from tmux when closing a session
+set -g escape-time 10           # remove delay for exiting insert mode with ESC in Neovim
+set -g repeat-time 500
+set -g display-time 1500
+set -g history-limit 1000000    # increase history size (from 2,000)
+set -g mouse on                 # enable mouse support
+set -g status-interval 1        # update the status bar every 3 seconds
+set -g allow-passthrough on     # Allow programs in the pane to bypass tmux (e.g. for image preview)
+
+# Start windows and panes at 1, not 0
+set -g base-index 1
+set -g pane-base-index 1
+set-window-option -g pane-base-index 1
+set-option -g renumber-windows on       # Ensure window index numbers get reordered on delete.
+setw -g automatic-rename                # Ensure window titles get renamed automatically.
+
+set-environment -g TMUX_PLUGIN_MANAGER_PATH ${XDG_CONFIG_HOME}/tmux/plugins/
+
+# -----------------------------------------------------------------------------
+# Key bindings
+# -----------------------------------------------------------------------------
+
 # Tmux prefix key
 # set new prefix key
+{{ if .personal -}}
 unbind C-b
 set -g prefix `
 bind-key ` send-prefix
+{{ else -}}
+unbind C-b
+set -g prefix C-a
+bind-key C-a send-prefix
+{{ end -}}
+
+# Refresh tmux config with r
+unbind r
+bind r source-file ~/.tmux.conf; display "Config reloaded 🚀"
+
+# choose tree format
+set -g @custom_choose_tree_format "\
+#{?pane_format,\
+#{?pane_marked,#[bg=#{@thm_surface_1}],}\
+#[fg=#{@thm_green}]  #{session_name} \
+#{E:#{@custom_separator}}#[fg=#{@thm_maroon}]  #{pane_current_command} \
+#{E:#{@custom_separator}}#[fg=#{@thm_blue}]  #{pane_current_path} \
+#{?window_zoomed_flag,#{?pane_active,#{E:#{@custom_separator}}#[fg=#{@thm_yellow}]  zoom ,},}\
+#{?pane_marked,#{E:#{@custom_separator}}#[fg=#{@thm_yellow}]  marked ,}\
+#{?pane_active,#{E:#{@custom_separator}}#[fg=#{@thm_yellow}]  active ,}\
+,}\
+#{?window_format,\
+#{?window_marked_flag,#[bg=#{@thm_surface_1}],}\
+#{?window_active,#{#[fg=#{@thm_peach},reverse]},\
+#{?window_last_flag,#[fg=#{@thm_peach}],#[fg=#{@thm_rosewater}]}\
+}\
+  #I #{window_name} \
+#{#[fg=#{@thm_rosewater},none]}\
+#{?#{==:#{window_panes},1},\
+#[fg=#{@thm_green}]  #{session_name} \
+#{E:#{@custom_separator}}#[fg=#{@thm_maroon}]  #{pane_current_command} \
+#{E:#{@custom_separator}}#[fg=#{@thm_blue}]  #{pane_current_path} \
+#{?window_marked_flag,#{E:#{@custom_separator}}#[fg=#{@thm_yellow}]  marked ,}\
+,}\
+,}\
+#{?session_format,\
+#{session_windows} windows\
+#{?session_grouped, (group #{session_group}: #{session_group_list}),}\
+#{?session_attached, (attached),}\
+,}
+"
+
+{{ if lookPath "fzf" }}
+# Search sessions using an fzf menu
+# Found this gem down here:
+# https://github.com/majjoha/dotfiles/blob/cd6f966d359e16b3a7c149f96d4edb8a83e769db/.config/tmux/tmux.conf#L41
+bind a display-popup -E -w 75% -h 75% "\
+  tmux list-sessions -F '#{?session_attached,,#{session_name}}' |\
+  sed '/^$/d' |\
+  fzf --reverse --header jump-to-session --preview 'tmux capture-pane -pt {}'  |\
+  xargs tmux switch-client -t"
+{{ end -}}
+
+{{ if lookPath "lazygit" }}
+bind g display-popup \
+  -d "#{pane_current_path}" \
+  -w 80% \
+  -h 80% \
+  -E "lazygit"
+{{ end -}}
+
+bind n display-popup -E 'bash -i -c "read -p \"Session name: \" name; tmux new-session -d -s \$name && tmux switch-client -t \$name"'
+
+# Split horizontally in CWD with \
+unbind %
+bind '\' split-window -h -c "#{pane_current_path}"
+
+# Split vertically in CWD with -
+unbind '"'
+bind - split-window -v -c "#{pane_current_path}"
+
+# Use m key to maximize pane
+bind -r m resize-pane -Z
+
+# how to navigate across the different panes in a window
+# Notice I'm using vim motions
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+
+# The number at the end specifies number of cells
+# Increase or decrease to your liking
+bind -r Left resize-pane -L 1
+bind -r Down resize-pane -D 1
+bind -r Up resize-pane -U 1
+bind -r Right resize-pane -R 1
+
+# start selecting text with "v"
+bind-key -T copy-mode-vi 'v' send -X begin-selection
+# copy text with "y"
+bind-key -T copy-mode-vi 'y' send -X copy-selection
+
+{{ $statusPosition := "bottom" -}}
+{{ if or (.personal) (.work) -}}
+    {{ $statusPosition = "top" -}}
+{{ end -}}
+set-option -g status-position {{ $statusPosition }}
+
+{{ if not .ephemeral -}}
+# I had to set this to on for osc52 to work
+# https://github.com/ojroques/nvim-osc52
+set -s set-clipboard on
+# don't exit copy mode when dragging with mouse
+unbind -T copy-mode-vi MouseDragEnd1Pane
+{{ end -}}
+
+##############################################################################
+##############################################################################
+#
+# Plugins section
+#
+##############################################################################
+##############################################################################
+
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-online-status'
+set -g @plugin 'tmux-plugins/tmux-battery'
+set -g @plugin 'tmux-plugins/tmux-cpu'
+set -g @plugin 'catppuccin/tmux'
+
+##############################################################################
+# Other plugins
+##############################################################################
+
+# list of tmux plugins
+
+# for navigating between tmux panes using Ctrl-hjkl
+# If you have neovim open in a tmux pane, and another tmux pane on the right,
+# you won't be able to jump from neovim to the tmux pane on the right.
+#
+# If you want to do jump between neovim and tmux, you need to install the same
+# 'vim-tmux-navigator' plugin inside neovim
+set -g @plugin 'christoomey/vim-tmux-navigator'
+
+# persist tmux sessions after computer restart
+# https://github.com/tmux-plugins/tmux-resurrect
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+# allow tmux-ressurect to capture pane contents
+set -g @resurrect-capture-pane-contents 'on'
+
+# automatically saves sessions for you every 15 minutes (this must be the last plugin)
+# https://github.com/tmux-plugins/tmux-continuum
+set -g @plugin 'tmux-plugins/tmux-continuum'
+# enable tmux-continuum functionality
+set -g @continuum-restore 'on'
+# Set the save interval in minutes, default is 15
+set -g @continuum-save-interval '5'
+
+set -g @plugin 'tmux-plugins/tmux-sessionist'
+
+run ${XDG_CONFIG_HOME}'/tmux/plugins/tpm/tpm'
+
+##############################################################################
+# Themes section
+##############################################################################
+
+set -g status-style "bg=default"
+set -g status-justify "absolute-centre"
+
+# Configure Catppuccin
+set -g @catppuccin_flavor "mocha"
+set -g @catppuccin_status_background "none" # none == default
+set -g @catppuccin_window_status_style "none"
+set -g @catppuccin_pane_status_enabled "off"
+set -g @catppuccin_pane_border_status "off"
+
+# Configure Online status
+set -g @online_icon "ok"
+set -g @offline_icon "nok"
+
+# Configure battery
+set -g @batt_icon_charge_tier8 ''
+set -g @batt_icon_charge_tier7 ''
+set -g @batt_icon_charge_tier6 ''
+set -g @batt_icon_charge_tier5 ''
+set -g @batt_icon_charge_tier4 ''
+set -g @batt_icon_charge_tier3 ''
+set -g @batt_icon_charge_tier2 ''
+set -g @batt_icon_charge_tier1 ''
+set -g @batt_icon_status_charged ''
+set -g @batt_icon_status_charging ''
+set -g @batt_icon_status_discharging ''
+set -g @batt_icon_status_attached ''
+set -g @batt_icon_status_unknown ''
+# Configure Cpu
+set -g @cpu_percentage_format "%03d%%"
+
+# Configure Mem
+set -g @ram_percentage_format "%03d%%"
+
+# status left look and feel
+set -g status-left-length 80
+set -g status-left ""
+
+# custom var
+set -g @custom_separator "#[fg=#{@thm_overlay_0},none]|"
+
+# status right look and feel
+set -g status-right-length 160
+set -g status-right ""
+
+# session
+set -ga status-left "#[fg=#{@thm_green},bg=default]"
+set -ga status-left "#{?client_prefix,#[#{fg=#{@thm_green}}]#[reverse]#[bold],}"
+set -ga status-left " #{?#{e|>:#{window_width},90}, #S,} "
+set -ga status-left "#{?client_prefix,#[none],}"
+set -ga status-left "#{E:#{@custom_separator}}"
+
+# application
+set -ga status-left "#[fg=#{@thm_maroon},bg=default]"
+set -ga status-left " #{?#{e|>:#{window_width},80}, #{pane_current_command},} "
+set -ga status-left "#{E:#{@custom_separator}}"
+
+# directory
+set -ga status-left "#[fg=#{@thm_blue},bg=default]"
+set -ga status-left " #{?#{e|>:#{window_width},80}, #{=/24/...:#{s|$USER|~|:#{b:pane_current_path}}},} "
+set -ga status-left "#{E:#{@custom_separator}}"
+
+# window zoom flag
+set -ga status-right "#{?window_zoomed_flag,"
+set -ga status-right "#[fg=#{@thm_yellow}]#[bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},110}, zoom,} "
+set -ga status-right "#{E:#{@custom_separator}}"
+set -ga status-right ",}"
+
+# pane marked flag
+set -ga status-right "#{?pane_marked,"
+set -ga status-right "#[fg=#{@thm_yellow}]#[bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},110}, marked,} "
+set -ga status-right "#{E:#{@custom_separator}}"
+set -ga status-right ",}"
+
+# cpu
+set -ga status-right "#[fg=#{@thm_teal},bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},115}, #{cpu_percentage},} "
+set -ga status-right "#{E:#{@custom_separator}}"
+
+# ram
+set -ga status-right "#[fg=#{@thm_sky},bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},115}, #{ram_percentage},} "
+set -ga status-right "#{E:#{@custom_separator}}"
+
+# battery
+set -ga status-right "#[fg=#{@thm_pink},bg=default]"
+set -ga status-right "#{?#{e|>:#{window_width},105},"
+set -ga status-right " #{?#{battery_percentage},#{battery_icon} #{battery_percentage},#{@batt_icon_status_charged} cable} "
+set -ga status-right ","
+set -ga status-right " #{?#{battery_percentage},#{battery_icon},#{@batt_icon_status_charged}} "
+set -ga status-right "}"
+set -ga status-right "#{E:#{@custom_separator}}"
+
+set -ga status-right "#[bg=default]#{?#{==:#{online_status},ok},#[fg=#{@thm_mauve}] 󰖩 on ,#[fg=#{@thm_red},bold]#[reverse] 󰖪 off }"
+
+# pane border look and feel
+setw -g pane-border-status off
+setw -g pane-border-format ""
+setw -g pane-active-border-style "bg=default,fg=#{@thm_peach}"
+setw -g pane-border-style "bg=default,fg=#{@thm_overlay_1}"
+setw -g pane-border-lines single
+
+# window look and feel
+set -gF window-status-separator "#[fg=#{@thm_overlay_0}]"
+set -wg automatic-rename on
+set -g automatic-rename-format "window"
+
+set -g window-status-format " #I#{?#{!=:#{window_name},Window},: #W,} "
+set -g window-status-style "fg=#{@thm_rosewater},bg=#{@thm_bg}"
+set -g window-status-last-style "bg=#{@thm_bg},fg=#{@thm_peach}"
+set -g window-status-activity-style "bg=#{@thm_red},fg=#{@thm_bg},bold"
+set -g window-status-bell-style "fg=#{@thm_red},bold"
+set -gF window-status-separator "#[bg=#{@thm_bg},fg=#{@thm_overlay_0},none]|"
+
+set -g window-status-current-format " #I#{?#{!=:#{window_name},Window},: #W,} "
+set -g window-status-current-style "bg=#{@thm_peach},fg=#{@thm_bg},bold"

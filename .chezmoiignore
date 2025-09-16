@@ -7,6 +7,8 @@
 .oh-my-zsh/plugins/**
 .oh-my-zsh/templates/**
 
+.config/tmux/plugins/**
+
 {{ if ne .chezmoi.os "darwin" }}
 .chezmoiscripts/darwin/**
 .config/homebrew
@@ -40,3 +42,4 @@
 misc
 install.sh
 key.txt.age
+**/.DS_Store

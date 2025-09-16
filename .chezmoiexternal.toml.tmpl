@@ -1,56 +1,59 @@
 {{- if not .ephemeral }}
 
 [".local/bin/yazi"]
-    type = "archive-file"
-    url = {{ gitHubLatestReleaseAssetURL "sxyazi/yazi" "yazi-x86_64-unknown-linux-gnu.zip" | quote }}
-    executable = true
-    path = "yazi-x86_64-unknown-linux-gnu/yazi"
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "sxyazi/yazi" "yazi-x86_64-unknown-linux-gnu.zip" | quote }}
+  executable = true
+  path = "yazi-x86_64-unknown-linux-gnu/yazi"
 
 {{- end }}
 
+{{ if ne .chezmoi.os "darwin" -}}
 [".local/bin/eza"]
-    type = "archive-file"
-    url = {{ gitHubLatestReleaseAssetURL "eza-community/eza" "eza_x86_64-unknown-linux-gnu.tar.gz" | quote }}
-    executable = true
-    path = "./eza"
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "eza-community/eza" "eza_x86_64-unknown-linux-gnu.tar.gz" | quote }}
+  executable = true
+  path = "./eza"
 
 [".local/bin/nvim"]
-    type = "archive-file"
-    url = {{ gitHubLatestReleaseAssetURL "neovim/neovim" "nvim-linux-x86_64.tar.gz" | quote }}
-    executable = true
-    path = "nvim-linux-x86_64/bin/nvim"
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "neovim/neovim" "nvim-linux-x86_64.tar.gz" | quote }}
+  executable = true
+  path = "nvim-linux-x86_64/bin/nvim"
 
 [".local/bin/lazygit"]
-    type = "archive-file"
-    url = {{ gitHubLatestReleaseAssetURL "jesseduffield/lazygit" "lazygit_0.55.0_linux_x86_64.tar.gz" | quote }}
-    executable = true
-    path = "lazygit"
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "jesseduffield/lazygit" "lazygit_0.55.0_linux_x86_64.tar.gz" | quote }}
+  executable = true
+  path = "lazygit"
+
+{{- end }}
+
+[".oh-my-zsh"]
+  type = "archive"
+  url = "https://github.com/ohmyzsh/ohmyzsh/archive/master.tar.gz"
+  exact = true
+  stripComponents = 1
+  refreshPeriod = "168h"
+  exclude = [
+    "*/.*",
+    "*/templates",
+    "*/themes",
+  ]
 
 {{- if .dockerSupported }}
 [".local/bin/lazydocker"]
-    type = "archive-file"
-    url = {{ gitHubLatestReleaseAssetURL "jesseduffield/lazydocker" "lazydocker_0.24.1_Linux_x86.tar.gz" | quote }}
-    executable = true
-    path = "lazydocker_0.24.1_Linux_x86/lazydocker"
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "jesseduffield/lazydocker" "lazydocker_0.24.1_Linux_x86.tar.gz" | quote }}
+  executable = true
+  path = "lazydocker_0.24.1_Linux_x86/lazydocker"
 
 {{- end }}
 
-[".tmux/plugins/tpm"]
-	type = "git-repo"
-    url = "https://github.com/tmux-plugins/tpm.git"
-    refreshPeriod = "168h"
-
-[".oh-my-zsh"]
-    type = "archive"
-    url = "https://github.com/ohmyzsh/ohmyzsh/archive/master.tar.gz"
-    exact = true
-    stripComponents = 1
-    refreshPeriod = "168h"
-    exclude = [
-        "*/.*",
-        "*/templates",
-        "*/themes",
-    ]
+[".config/tmux/plugins/tpm"]
+  type = "git-repo"
+  url = "https://github.com/tmux-plugins/tpm.git"
+  refreshPeriod = "168h"
 
 [".oh-my-zsh/custom/plugins/zsh-syntax-highlighting"]
     type = "archive"
