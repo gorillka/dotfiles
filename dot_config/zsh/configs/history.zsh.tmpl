@@ -1,0 +1,25 @@
+# Set Up Command History
+# ------------------------------------------------------------------------------
+## Enable globally shared history (same history in every shell)
+setopt SHARE_HISTORY
+
+## When writing out the history file, older duplicate commands are omitted
+setopt HIST_SAVE_NO_DUPS
+
+## Don't save commands prefixed with at least one space to history
+setopt HIST_IGNORE_SPACE
+
+## Don't directly execute commands when using history expansion
+setopt HIST_VERIFY
+
+## Max number of history lines in memory
+HISTSIZE=25000
+
+# Set up history file
+if [[ ! -d "$XDG_DATA_HOME/zsh" ]]; then
+  mkdir -p "$XDG_DATA_HOME/zsh"
+fi
+HISTFILE="$XDG_DATA_HOME/zsh/history"
+
+## Max number of history lines saved in history file
+SAVEHIST=200000

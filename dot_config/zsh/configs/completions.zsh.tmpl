@@ -1,0 +1,20 @@
+# Set Up Completion
+# ------------------------------------------------------------------------------
+# Problems with insecure directories under macOS?
+# -> see https://stackoverflow.com/a/13785716/149220 for a solution
+CACHE_DIRECTORY="$XDG_CACHE_HOME/zsh"
+
+## Use cache
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$CACHE_DIRECTORY/completion-cache"
+
+## These were created by `compinstall`
+zstyle ':completion:*' completer _complete _ignored _approximate
+zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]} r:|[._-]=* r:|=*' 'm:{[:lower:]}={[:upper:]}' 'm:{[:lower:]}={[:upper:]}' 'm:{[:lower:]}={[:upper:]}'
+zstyle ':completion:*' max-errors 2
+zstyle :compinstall filename "$ZDOTDIR/.zshrc"
+zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+
+## Initialize completion system
+### Set location for compinit's dumpfile.
+autoload -Uz compinit && compinit -d "$CACHE_DIRECTORY/compinit-dumpfile"

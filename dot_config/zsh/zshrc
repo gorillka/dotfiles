@@ -1,0 +1,32 @@
+# extra files in $XDG_CONFIG_HOME/zsh/configs/pre , $XDG_CONFIG_HOME/zsh/configs , and $XDG_CONFIG_HOME/zsh/configs/post
+# these are loaded first, second, and third, respectively.
+_load_setting() {
+    local dir=$1
+    if [[ -d $dir ]]; then
+        for config in $dir/*; do
+            [[ -f $config && "$config" != *".zwc" ]] && source $config
+        done
+    fi
+}
+
+_load_settings() {
+    local name=$1
+    _load_setting "${XDG_CONFIG_HOME}/zsh/pre_${name}"
+    _load_setting "${XDG_CONFIG_HOME}/zsh/${name}"
+    _load_setting "${XDG_CONFIG_HOME}/zsh/post_${name}"
+}
+
+_load_settings "configs"
+
+# Local config
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+# load custom executable functions
+for function in ${XDG_CONFIG_HOME}/zsh/functions/*; do
+  source $function
+done
+
+# aliases
+for alias in ${XDG_CONFIG_HOME}/zsh/aliases/*; do
+    source $alias
+done

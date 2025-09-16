@@ -1,0 +1,21 @@
+{{  $links := dict
+    "tmux/tmux.conf" ".tmux.conf"
+    "zsh/zshenv" ".zshenv"
+    "zsh/zshrc" ".zshrc"
+    -}}
+
+{{ $sudo := "sudo " -}}
+{{ if eq .chezmoi.username "root" -}}
+    {{ $sudo = "" -}}
+{{ end -}}
+#!/bin/bash
+
+set -eufo pipefail
+
+{{ $homeDir := .chezmoi.homeDir -}}
+{{ $configDir := joinPath $homeDir ".config" -}}
+{{ range $key, $value := $links -}}
+    {{ $source := joinPath $configDir $key -}}
+    {{ $target := joinPath $homeDir $value -}}
+ln -sf {{ $source }} {{ $target }}
+{{ end -}}

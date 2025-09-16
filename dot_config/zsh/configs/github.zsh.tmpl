@@ -1,0 +1,12 @@
+{{ if and (.personal) (not .ephemeral) (lookPath "bw") -}}
+    {{- $itemName := printf "github.com (%s)" .name }}
+    {{- range (bitwarden "item" $itemName).fields }}
+        {{- if eq .name "API Token" }}
+export GITHUB_ACCESS_TOKEN={{ .value | trim }}
+        {{- end }}
+    {{- end }}
+{{ end -}}
+
+{{- if .personal -}}
+export CHEZMOI_GITHUB_ACCESS_TOKEN=$GITHUB_ACCESS_TOKEN
+{{- end }}

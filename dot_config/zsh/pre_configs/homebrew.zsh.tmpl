@@ -1,0 +1,15 @@
+# If you come from bash you might have to change your $PATH.
+{{- $paths := list -}}
+{{- if stat "/opt/homebrew/bin" -}}
+    {{- $paths = mustAppend $paths "/opt/homebrew/bin" -}}
+{{- end -}}
+{{- $homeDir := .chezmoi.homeDir -}}
+{{- range $_, $relPath := list "bin" "go/bin" ".cargo/bin" ".local/bin" -}}
+    {{- $path := joinPath $homeDir $relPath -}}
+    {{- if stat $path -}}
+        {{- $paths = mustAppend $paths $path -}}
+    {{- end -}}
+{{- end }}
+{{- if $paths }}
+export PATH={{ toStrings $paths | join ":" }}:$PATH
+{{- end }}

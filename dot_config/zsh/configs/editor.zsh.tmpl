@@ -1,0 +1,16 @@
+# Use Neovim as default editor
+{{ if stat (printf "%s/.local/bin/nvim" .chezmoi.homeDir) -}}
+export EDITOR=$HOME/.local/bin/nvim
+{{ else if lookPath "nvim" -}}
+export EDITOR=nvim
+{{ else -}}
+export EDITOR=vim
+{{ end -}}
+
+if [[ "${TERM_PROGRAM:-unset}" == "zed" ]]; then
+    export VISUAL="zed --wait"
+elif [[ "${TERM_PROGRAM:-unset}" == "vscode" ]]; then
+    export VISUAL="code --wait"
+else
+    export VISUAL=nvim
+fi
