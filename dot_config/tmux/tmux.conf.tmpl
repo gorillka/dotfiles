@@ -55,11 +55,21 @@ set-window-option -g pane-base-index 1
 set-option -g renumber-windows on       # Ensure window index numbers get reordered on delete.
 setw -g automatic-rename                # Ensure window titles get renamed automatically.
 
-set-environment -g TMUX_PLUGIN_MANAGER_PATH ${XDG_CONFIG_HOME}/tmux/plugins/
+{{ $statusPosition := "bottom" -}}
+{{ if or (.personal) (.work) -}}
+    {{ $statusPosition = "top" -}}
+{{ end -}}
+set-option -g status-position {{ $statusPosition }}
 
-# -----------------------------------------------------------------------------
-# Key bindings
-# -----------------------------------------------------------------------------
+{{ if not .ephemeral -}}
+# I had to set this to on for osc52 to work
+# https://github.com/ojroques/nvim-osc52
+set -s set-clipboard on
+# don't exit copy mode when dragging with mouse
+unbind -T copy-mode-vi MouseDragEnd1Pane
+{{ end -}}
+
+set-environment -g TMUX_PLUGIN_MANAGER_PATH ${XDG_CONFIG_HOME}/tmux/plugins/
 
 # Tmux prefix key
 # set new prefix key
@@ -77,58 +87,8 @@ bind-key C-a send-prefix
 unbind r
 bind r source-file ~/.tmux.conf; display "Config reloaded 🚀"
 
-# choose tree format
-set -g @custom_choose_tree_format "\
-#{?pane_format,\
-#{?pane_marked,#[bg=#{@thm_surface_1}],}\
-#[fg=#{@thm_green}]  #{session_name} \
-#{E:#{@custom_separator}}#[fg=#{@thm_maroon}]  #{pane_current_command} \
-#{E:#{@custom_separator}}#[fg=#{@thm_blue}]  #{pane_current_path} \
-#{?window_zoomed_flag,#{?pane_active,#{E:#{@custom_separator}}#[fg=#{@thm_yellow}]  zoom ,},}\
-#{?pane_marked,#{E:#{@custom_separator}}#[fg=#{@thm_yellow}]  marked ,}\
-#{?pane_active,#{E:#{@custom_separator}}#[fg=#{@thm_yellow}]  active ,}\
-,}\
-#{?window_format,\
-#{?window_marked_flag,#[bg=#{@thm_surface_1}],}\
-#{?window_active,#{#[fg=#{@thm_peach},reverse]},\
-#{?window_last_flag,#[fg=#{@thm_peach}],#[fg=#{@thm_rosewater}]}\
-}\
-  #I #{window_name} \
-#{#[fg=#{@thm_rosewater},none]}\
-#{?#{==:#{window_panes},1},\
-#[fg=#{@thm_green}]  #{session_name} \
-#{E:#{@custom_separator}}#[fg=#{@thm_maroon}]  #{pane_current_command} \
-#{E:#{@custom_separator}}#[fg=#{@thm_blue}]  #{pane_current_path} \
-#{?window_marked_flag,#{E:#{@custom_separator}}#[fg=#{@thm_yellow}]  marked ,}\
-,}\
-,}\
-#{?session_format,\
-#{session_windows} windows\
-#{?session_grouped, (group #{session_group}: #{session_group_list}),}\
-#{?session_attached, (attached),}\
-,}
-"
-
-{{ if lookPath "fzf" }}
-# Search sessions using an fzf menu
-# Found this gem down here:
-# https://github.com/majjoha/dotfiles/blob/cd6f966d359e16b3a7c149f96d4edb8a83e769db/.config/tmux/tmux.conf#L41
-bind a display-popup -E -w 75% -h 75% "\
-  tmux list-sessions -F '#{?session_attached,,#{session_name}}' |\
-  sed '/^$/d' |\
-  fzf --reverse --header jump-to-session --preview 'tmux capture-pane -pt {}'  |\
-  xargs tmux switch-client -t"
-{{ end -}}
-
-{{ if lookPath "lazygit" }}
-bind g display-popup \
-  -d "#{pane_current_path}" \
-  -w 80% \
-  -h 80% \
-  -E "lazygit"
-{{ end -}}
-
-bind n display-popup -E 'bash -i -c "read -p \"Session name: \" name; tmux new-session -d -s \$name && tmux switch-client -t \$name"'
+unbind-key q
+bind q kill-pane
 
 # Split horizontally in CWD with \
 unbind %
@@ -159,20 +119,6 @@ bind -r Right resize-pane -R 1
 bind-key -T copy-mode-vi 'v' send -X begin-selection
 # copy text with "y"
 bind-key -T copy-mode-vi 'y' send -X copy-selection
-
-{{ $statusPosition := "bottom" -}}
-{{ if or (.personal) (.work) -}}
-    {{ $statusPosition = "top" -}}
-{{ end -}}
-set-option -g status-position {{ $statusPosition }}
-
-{{ if not .ephemeral -}}
-# I had to set this to on for osc52 to work
-# https://github.com/ojroques/nvim-osc52
-set -s set-clipboard on
-# don't exit copy mode when dragging with mouse
-unbind -T copy-mode-vi MouseDragEnd1Pane
-{{ end -}}
 
 ##############################################################################
 ##############################################################################
@@ -219,6 +165,63 @@ set -g @continuum-save-interval '5'
 set -g @plugin 'tmux-plugins/tmux-sessionist'
 
 run ${XDG_CONFIG_HOME}'/tmux/plugins/tpm/tpm'
+
+##############################################################################
+# Key bindings
+##############################################################################
+
+# choose tree format
+set -g @custom_choose_tree_format "\
+#{?pane_format,\
+#{?pane_marked,#[bg=#{@thm_surface_1}],}\
+#[fg=#{@thm_green}]  #{session_name} \
+#{E:#{@custom_separator}}#[fg=#{@thm_maroon}]  #{pane_current_command} \
+#{E:#{@custom_separator}}#[fg=#{@thm_blue}]  #{pane_current_path} \
+#{?window_zoomed_flag,#{?pane_active,#{E:#{@custom_separator}}#[fg=#{@thm_yellow}]  zoom ,},}\
+#{?pane_marked,#{E:#{@custom_separator}}#[fg=#{@thm_yellow}]  marked ,}\
+#{?pane_active,#{E:#{@custom_separator}}#[fg=#{@thm_yellow}]  active ,}\
+,}\
+#{?window_format,\
+#{?window_marked_flag,#[bg=#{@thm_surface_1}],}\
+#{?window_active,#{#[fg=#{@thm_peach},reverse]},\
+#{?window_last_flag,#[fg=#{@thm_peach}],#[fg=#{@thm_rosewater}]}\
+}\
+  #I #{window_name} \
+#{#[fg=#{@thm_rosewater},none]}\
+#{?#{==:#{window_panes},1},\
+#[fg=#{@thm_green}]  #{session_name} \
+#{E:#{@custom_separator}}#[fg=#{@thm_maroon}]  #{pane_current_command} \
+#{E:#{@custom_separator}}#[fg=#{@thm_blue}]  #{pane_current_path} \
+#{?window_marked_flag,#{E:#{@custom_separator}}#[fg=#{@thm_yellow}]  marked ,}\
+,}\
+,}\
+#{?session_format,\
+#{session_windows} windows\
+#{?session_grouped, (group #{session_group}: #{session_group_list}),}\
+#{?session_attached, (attached),}\
+,}
+"
+
+{{ if lookPath "fzf" }}
+# Search sessions using an fzf menu
+# Found this gem down here:
+# https://github.com/majjoha/dotfiles/blob/cd6f966d359e16b3a7c149f96d4edb8a83e769db/.config/tmux/tmux.conf#L41
+bind S display-popup -E -w 75% -h 75% "\
+  tmux list-sessions -F '#{?session_attached,,#{session_name}}' |\
+  sed '/^$/d' |\
+  fzf --reverse --header jump-to-session --preview 'tmux capture-pane -pt {}'  |\
+  xargs tmux switch-client -t"
+{{ end -}}
+
+{{ if lookPath "lazygit" }}
+bind g display-popup \
+  -d "#{pane_current_path}" \
+  -w 80% \
+  -h 80% \
+  -E "lazygit"
+{{ end -}}
+
+bind n display-popup -E 'bash -i -c "read -p \"Session name: \" name; tmux new-session -d -s \$name && tmux switch-client -t \$name"'
 
 ##############################################################################
 # Themes section
