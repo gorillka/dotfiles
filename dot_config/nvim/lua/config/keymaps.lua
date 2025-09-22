@@ -50,6 +50,10 @@ vim.keymap.set({ "n", "v" }, "gl", "$", { desc = "Got to the end of line" })
 
 -- yank/copy to end of line
 vim.keymap.set("n", "Y", "y$", { desc = "[Y]ank to end of line" })
+-- Easier interaction with the system clipboard
+vim.keymap.set({ 'n', 'x' }, '<leader>y', '"+y', { desc = 'Copy to system clipboard' })
+vim.keymap.set({ 'n', 'x' }, '<leader>p', '"+p', { desc = 'Paste from system clipboard after the cursor position' })
+vim.keymap.set({ 'n', 'x' }, '<leader>P', '"+P', { desc = 'Paste from system clipboard before the cursor position' })
 
 -- Make the file you run the command on, executable, so you don't have to go out to the command line
 -- Had to include quotes around "%" because there are some apple dirs that contain spaces, like iCloud
