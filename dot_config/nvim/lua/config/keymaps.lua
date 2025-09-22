@@ -1,0 +1,100 @@
+-- ================================================================================================
+-- TITLE: NeoVim keymaps
+-- ABOUT: sets some quality-of-life keymaps
+-- ================================================================================================
+
+-- Center screen when jumping
+vim.keymap.set("n", "n", "nzzzv", { desc = "Next search result (centered)" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous search result (centered)" })
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half page down (centered)" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half page up (centered)" })
+
+-- Better window navigation
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Move to bottom window" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Move to top window" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
+
+-- Splitting & Resizing
+vim.keymap.set("n", "<leader>wv", "<Cmd>vsplit<CR>", { desc = "Split window vertically" })
+vim.keymap.set("n", "<leader>wh", "<Cmd>split<CR>", { desc = "Split window horizontally" })
+vim.keymap.set("n", "<leader>wx", "close<CR>", { desc = "Close current split window" })
+vim.keymap.set("n", "<leader>wq", "<cmd> :q <CR>", { desc = "Quit" })
+vim.keymap.set("n", "<leader>ww", function()
+    vim.cmd("write")
+end, { desc = "Write current file" })
+vim.keymap.set("n", "<leader>wn", "<cmd>noautocmd w <CR>", { desc = "Save file without auto-formatting" })
+vim.keymap.set("n", "<C-Up>", "<Cmd>resize +2<CR>", { desc = "Increase window height" })
+vim.keymap.set("n", "<C-Down>", "<Cmd>resize -2<CR>", { desc = "Decrease window height" })
+vim.keymap.set("n", "<C-Left>", "<Cmd>vertical resize -2<CR>", { desc = "Decrease window width" })
+vim.keymap.set("n", "<C-Right>", "<Cmd>vertical resize +2<CR>", { desc = "Increase window width" })
+
+-- Press jk fast to exit insert mode
+-- vim.keymap.set({ "n", "i" }, "jk", "<ESC>", { desc = "Press [j][k] fast to exit insert mode" })
+
+-- Better indenting in visual mode
+vim.keymap.set("v", "<", "<gv", { desc = "Indent left and reselect" })
+vim.keymap.set("v", ">", ">gv", { desc = "Indent right and reselect" })
+
+-- Quick config editing
+vim.keymap.set("n", "<leader>rc", "<Cmd>e ~/.config/nvim/init.lua<CR>", { desc = "Edit config" })
+
+-- File Explorer
+vim.keymap.set("n", "<leader>m", "<Cmd>NvimTreeFocus<CR>", { desc = "Focus on File Explorer" })
+vim.keymap.set("n", "<leader>e", "<Cmd>NvimTreeToggle<CR>", { desc = "Toggle File Explorer" })
+
+-- use gh to move to the beginning of the line in normal mode
+-- use ge to move to the end of the line in normal mode
+vim.keymap.set({ "n", "v" }, "gh", "0", { desc = "Go to the begining line" })
+vim.keymap.set({ "n", "v" }, "gl", "$", { desc = "Got to the end of line" })
+
+-- yank/copy to end of line
+vim.keymap.set("n", "Y", "y$", { desc = "[Y]ank to end of line" })
+
+-- Make the file you run the command on, executable, so you don't have to go out to the command line
+-- Had to include quotes around "%" because there are some apple dirs that contain spaces, like iCloud
+vim.keymap.set("n", "<leader>fx", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make file executable" })
+vim.keymap.set("n", "<leader>fX", "<cmd>!chmod -x %<CR>", { silent = true, desc = "Remove executable flag" })
+
+-- If this is a bash script, make it executable, and execute it in a tmux pane on the right
+-- Using a tmux pane allows me to easily select text
+-- Had to include quotes around "%" because there are some apple dirs that contain spaces, like iCloud
+vim.keymap.set("n", "<leader>cb", function()
+	local file = vim.fn.expand("%") -- Get the current file name
+	local first_line = vim.fn.getline(1) -- Get the first line of the file
+	if string.match(first_line, "^#!/") then -- If first line contains shebang
+		local escaped_file = vim.fn.shellescape(file) -- Properly escape the file name for shell commands
+
+		-- Execute the script on a tmux pane on the right. On my mac I use zsh, so
+		-- running this script with bash to not execute my zshrc file after
+		-- vim.cmd("silent !tmux split-window -h -l 60 'bash -c \"" .. escaped_file .. "; exec bash\"'")
+		-- `-l 60` specifies the size of the tmux pane, in this case 60 columns
+		vim.cmd(
+			"silent !tmux split-window -h -l 60 'bash -c \""
+				.. escaped_file
+				.. "; echo; echo Press any key to exit...; read -n 1; exit\"'"
+		)
+	else
+		vim.cmd("echo 'Not a script. Shebang line not found.'")
+	end
+end, { desc = "BASH, execute file" })
+
+-- Copy file path / filepath to the clipboard
+vim.keymap.set("n", "<leader>fp", function()
+	local filePath = vim.fn.expand("%:~") -- Gets the file path relative to the home directory
+	vim.fn.setreg("+", filePath) -- Copy the file path to the clipboard register
+	print("File path copied to clipboard: " .. filePath) -- Optional: print message to confirm
+end, { desc = "Copy file path to clipboard" })
+
+-- Keep last yanked when pasting
+vim.keymap.set("n", "p", '"_dP', { desc = "Keep last yanked when [p]asting" })
+
+-- Replace word under cursor
+vim.keymap.set("n", "<leader>j", "*``cgn", { desc = "Replace word under cursor" })
+
+-- Explicitly yank to system clipboard (highlighted and entire row)
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
+vim.keymap.set("n", "<leader>Y", [["+Y]])
+
+-- delete single character without copying into register
+vim.keymap.set("n", "x", '"_x', { desc = "Delete single character without copying into register" })
