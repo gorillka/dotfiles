@@ -10,21 +10,16 @@ set -eufo pipefail
     "eza"
     "fd"
     "fzf"
-    "git"
-    "git-lfs"
-    "gnu-units"
-    "gnupg"
     "jq"
     "ripgrep"
     "tmux"
     "lazygit"
-    "ffmpeg"
     "neovim"
     "oh-my-posh"
     "zsh"
 -}}
 {{ if eq .chezmoi.os "darwin" -}}
-	{{ $brews = mustAppend $brews "mas" }}
+	{{ $brews = concat $brews (list "mas" "ffmpeg" "git" "git-lfs" "gnu-units" "gnupg") }}
 {{ end -}}
 
 {{ $casks := list }}
@@ -37,10 +32,8 @@ set -eufo pipefail
 
 find_brew
 
-# Install packages
-msg_spin "Installing packages using brew bundle"
-
 eval "$(${BREW_PATH} shellenv)"
+export NONINTERACTIVE=1
 export HOMEBREW_NO_AUTO_UPDATE=1
 brew bundle --file=/dev/stdin <<EOF
 {{ range ($brews | sortAlpha | uniq) -}}
