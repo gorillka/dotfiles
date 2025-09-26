@@ -8,7 +8,7 @@
 
 {{- end }}
 
-{{ if ne .chezmoi.os "darwin" -}}
+{{ if not .homebrewSupported -}}
 [".local/bin/eza"]
   type = "archive-file"
   url = {{ gitHubLatestReleaseAssetURL "eza-community/eza" "eza_x86_64-unknown-linux-gnu.tar.gz" | quote }}
