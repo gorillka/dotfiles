@@ -1,4 +1,4 @@
-{{ if and (not .homebrewSupported) (eq .osid "linux-debian" "linux-raspbian" "linux-ubuntu") -}}
+{{ if and (.homebrewSupported) (eq .osid "linux-debian" "linux-raspbian" "linux-ubuntu") -}}
 
 {{ $packages := list
      "git"
