@@ -271,6 +271,17 @@ msg_error() {
 #------------------------------------------------------------------------------
 trap '__stop_spinner; exit' EXIT INT TERM
 
+# ------------------------------------------------------------------------------
+# Clears the current terminal line
+# Uses tput commands with fallback to ANSI escape sequences
+# ------------------------------------------------------------------------------
+clear_line() {
+    # Move cursor to beginning of line (carriage return)
+    tput cr 2>/dev/null || echo -en "\r"
+
+    # Clear from cursor to end of line
+    tput el 2>/dev/null || echo -en "\033[K"
+}
 
 # ------------------------------------------------------------------------------
 # Prints error message and terminates script
