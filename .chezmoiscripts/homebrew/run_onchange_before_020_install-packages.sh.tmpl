@@ -34,7 +34,13 @@ set -eufo pipefail
 	{{ $casks = mustAppend $casks "raycast" -}}
 {{ end -}}
 
-eval "$(/opt/homebrew/bin/brew shellenv)"
+find_brew
+
+# Install packages
+print_message "Installing packages using brew bundle"
+
+eval "$(${BREW_PATH} shellenv)"
+export HOMEBREW_NO_AUTO_UPDATE=1
 brew bundle --file=/dev/stdin <<EOF
 {{ range ($brews | sortAlpha | uniq) -}}
 brew "{{ . }}"
