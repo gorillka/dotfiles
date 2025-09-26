@@ -24,7 +24,7 @@ set -eufo pipefail
     "zsh"
 -}}
 {{ if eq .chezmoi.os "darwin" -}}
-	{{ $brews = mustAppend $brew "mas" }}
+	{{ $brews = mustAppend $brews "mas" }}
 {{ end -}}
 
 {{ $casks := list }}
