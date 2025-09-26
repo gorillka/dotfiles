@@ -1,35 +1,25 @@
-{{ if and (eq .osid "linux-debian" "linux-raspbian" "linux-ubuntu") -}}
+{{ if and (not .homebrewSupported) (eq .osid "linux-debian" "linux-raspbian" "linux-ubuntu") -}}
 
 {{ $packages := list
-     "git"
-     "git-lfs"
+	"age"
+	"btop"
+     "bat"
+     "curl"
+     "fd-find"
+     "fzf"
+     "jq"
      "openssh-server"
+     "ripgrep"
+     "tmux"
      "wget"
+     "ffmpeg"
      "7zip"
      "poppler-utils"
--}}
+     "zoxide"
+     "imagemagick"
+     "zsh" -}}
 {{ $snaps := list -}}
 {{ $classicSnaps := list -}}
-
-{{ if not .homebrewSupported }}
-     {{ $packages = concat $packages (list
-          "age"
-          "bat"
-          "btop"
-          "curl"
-          "fd-find"
-          "fzf"
-          "jq"
-          "ripgrep"
-          "tmux"
-          "ffmpeg"
-          "zoxide"
-          "imagemagick"
-          "oh-my-posh"
-          "zsh"
-          "neovim"
-     )}}
-{{ end -}}
 
 {{ if .kvm -}}
 	{{ $packages = mustAppend $packages "qemu-guest-agent" -}}
@@ -45,7 +35,8 @@
 
 
 {{ if not .headless -}}
-{{   $packages = concat $packages (list "fonts-jetbrains-mono" "xclip")-}}
+{{   $packages = mustAppend $packages "fonts-jetbrains-mono" -}}
+{{   $packages = mustAppend $packages "xclip" -}}
 {{   $classicSnaps = mustAppend $classicSnaps "code" -}}
 {{ end -}}
 
