@@ -3,6 +3,10 @@
 {{- if stat "/opt/homebrew/bin" -}}
     {{- $paths = mustAppend $paths "/opt/homebrew/bin" -}}
 {{- end -}}
+{{- if stat "/home/linuxbrew/.linuxbrew/bin" -}}
+    {{- $paths = mustAppend $paths "/home/linuxbrew/.linuxbrew/bin" -}}
+{{- end -}}
+
 {{- $homeDir := .chezmoi.homeDir -}}
 {{- range $_, $relPath := list "bin" "go/bin" ".cargo/bin" ".local/bin" -}}
     {{- $path := joinPath $homeDir $relPath -}}

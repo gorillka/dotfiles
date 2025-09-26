@@ -16,18 +16,23 @@ set -eufo pipefail
     "jq"
     "ripgrep"
     "tmux"
-    "mas"
     "lazygit"
     "ffmpeg"
     "neovim"
     "oh-my-posh"
     "zsh"
 -}}
-{{ $casks := list
-	"ghostty"
-	"zed"
-	"raycast"
--}}
+{{ if eq .chezmoi.os "darwin" -}}
+	{{ $brews = mustAppend $brew "mas" }}
+{{ end -}}
+
+{{ $casks := list }}
+{{ if and (not .ephemeral) (not .headless) -}}
+	{{ $casks = concat $casks (list "ghostty" "zed") -}}
+{{ end -}}
+{{ if eq .chezmoi.os "darwin" -}}
+	{{ $casks = mustAppend $casks "raycast" -}}
+{{ end -}}
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
 brew bundle --file=/dev/stdin <<EOF

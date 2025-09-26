@@ -1,8 +1,8 @@
-{{ if eq .osid "linux-debian" "linux-raspbian" "linux-ubuntu" -}}
+{{ if and (not .homebrewSupported) (eq .osid "linux-debian" "linux-raspbian" "linux-ubuntu") -}}
 
 {{ $packages := list
-	 "age"
-	 "btop"
+	"age"
+	"btop"
      "bat"
      "curl"
      "fd-find"

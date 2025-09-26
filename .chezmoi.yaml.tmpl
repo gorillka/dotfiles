@@ -45,6 +45,21 @@
     {{- $work = (eq $machineType "work") -}}
 {{- end -}}
 
+{{/* Figure out if we have Homebrew support (currently no support under Linux/arm) */}}
+{{- $homebrewSupported := true -}}
+{{- if eq .chezmoi.os "darwin" -}}
+  {{- $homebrewSupported = true -}}
+{{- else if eq .chezmoi.os "windows" -}}
+  {{- $homebrewSupported = false -}}
+{{- else if (and (eq .chezmoi.arch "arm64") (eq .chezmoi.os "linux")) -}}
+  {{- $homebrewSupported = false -}}
+{{- else if stdinIsATTY -}}
+  {{ $homebrewSupported = promptBoolOnce . "homebrewSupported" "Do you want to install Homebrew" true }}
+{{/* No real reason to install Homebrew in something small like a dev container */}}
+{{- else if $ephemeral -}}
+  {{ $homebrewSupported = false }}
+{{- end -}}
+
 {{/* Personal info */}}
 {{- $email := "a.orynko@gmail.com" -}}
 {{- $name := "gorillka" -}}
@@ -81,6 +96,8 @@ data:
 
   ephemeral: {{ $ephemeral }}
   headless: {{ $headless }}
+
+  homebrewSupported: {{ $homebrewSupported }}
 
   kvm: {{ $kvm }}
   lxc: {{ $lxc }}
