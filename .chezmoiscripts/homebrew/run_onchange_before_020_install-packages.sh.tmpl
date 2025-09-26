@@ -38,7 +38,7 @@ set -eufo pipefail
 find_brew
 
 # Install packages
-print_message "Installing packages using brew bundle"
+msg_spin "Installing packages using brew bundle"
 
 eval "$(${BREW_PATH} shellenv)"
 export HOMEBREW_NO_AUTO_UPDATE=1
