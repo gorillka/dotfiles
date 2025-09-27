@@ -319,7 +319,7 @@ find_app() {
 		fi
 	done
 
-	${name}_PATH=${app_path}"
+	${name^^}_PATH=${app_path}
 }
 
 __load_core_func
