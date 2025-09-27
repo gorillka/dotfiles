@@ -307,19 +307,21 @@ __override_sudo() {
 
 # Find app
 find_app() {
-	local name="$1"
-	common_install_paths=("/opt/homebrew/bin/${name}" "/home/linuxbrew/.linuxbrew/bin/${name}" "/usr/local/bin/${name}" "/usr/bin/${name}")
-	app_path=""
-	for idx in "${!common_install_paths[@]}"; do
-		current_path="${common_install_paths[${idx}]}"
-		msg_act "Checking for ${name} at ${current_path}"
-		if [ -f "${current_path}" ]; then
-			msg_note "${name} found at ${current_path}"
-			app_path="${current_path}"
-		fi
-	done
+    local name="$1"
+    local common_install_paths=("/opt/homebrew/bin/${name}" "/home/linuxbrew/.linuxbrew/bin/${name}" "/usr/local/bin/${name}" "/usr/bin/${name}")
+    local app_path=""
 
-	${name^^}_PATH=${app_path}
+    for current_path in "${common_install_paths[@]}"; do
+        msg_act "Checking for ${name} at ${current_path}"
+        if [ -x "${current_path}" ]; then
+            msg_note "${name} found at ${current_path}"
+            app_path="${current_path}"
+            break  # Зупиняємо цикл після знаходження
+        fi
+    done
+
+    # Виводимо шлях або порожній рядок, якщо не знайдено
+    echo "${app_path}"
 }
 
 __load_core_func

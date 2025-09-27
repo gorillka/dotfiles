@@ -3,7 +3,7 @@ source {{ .chezmoi.sourceDir }}/misc/.helper.sh
 
 msg_spin "Setting up Homebrew"
 
-find_app "brew"
+BREW_PATH=$(find_app "brew")
 export NONINTERACTIVE=1
 
 if [ command -v ${BREW_PATH} &> /dev/null ]; then
