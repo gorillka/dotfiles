@@ -21,6 +21,10 @@ set -eufo pipefail
 	{{ $brews = concat $brews (list "mas" "ffmpeg" "git" "git-lfs" "gnu-units" "gnupg") }}
 {{ end -}}
 
+{{ if .dockerSupported -}}
+	{{ $brews = concat $brews (list "docker" "docker-compose") }}
+{{ end -}}
+
 {{ $casks := list }}
 {{ if and (not .ephemeral) (not .headless) -}}
 	{{ $casks = concat $casks (list "ghostty" "zed") -}}
@@ -31,9 +35,8 @@ set -eufo pipefail
 
 BREW_PATH=$(find_app "brew")
 
-eval "$(${BREW_PATH} shellenv)"
 export HOMEBREW_NO_AUTO_UPDATE=1
-brew bundle --file=/dev/stdin <<EOF
+$BREW_PATH bundle --file=/dev/stdin <<EOF
 {{ range ($brews | sortAlpha | uniq) -}}
 brew "{{ . }}"
 {{ end -}}
