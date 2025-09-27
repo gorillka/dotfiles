@@ -10,7 +10,6 @@ set -eufo pipefail
     "eza"
     "fd"
     "fzf"
-    "jq"
     "ripgrep"
     "tmux"
     "lazygit"
@@ -30,7 +29,7 @@ set -eufo pipefail
 	{{ $casks = mustAppend $casks "raycast" -}}
 {{ end -}}
 
-find_brew
+BREW_PATH=$(find_app "brew")
 
 eval "$(${BREW_PATH} shellenv)"
 export NONINTERACTIVE=1

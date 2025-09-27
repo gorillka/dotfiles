@@ -305,19 +305,21 @@ __override_sudo() {
     fi
 }
 
-# Find brew
-find_brew() {
-  brew_common_install_paths=("/opt/homebrew/bin/brew" "/home/linuxbrew/.linuxbrew/bin/brew")
-  brew_path=""
-  for idx in "${!brew_common_install_paths[@]}"; do
-    current_path="${brew_common_install_paths[${idx}]}"
-    msg_act "Checking for brew at ${current_path}"
-    if [ -f "${current_path}" ]; then
-      msg_note "Brew found at ${current_path}"
-      brew_path="${current_path}"
-    fi
-  done
-  export BREW_PATH="${brew_path}"
+# Find app
+find_app() {
+	local name="$1"
+	common_install_paths=("/opt/homebrew/bin/${name}" "/home/linuxbrew/.linuxbrew/bin/${name}" "/usr/local/bin/${name}" "/usr/bin/${name}")
+	app_path=""
+	for idx in "${!common_install_paths[@]}"; do
+		current_path="${common_install_paths[${idx}]}"
+		msg_act "Checking for ${name} at ${current_path}"
+		if [ -f "${current_path}" ]; then
+			msg_note "${name} found at ${current_path}"
+			app_path="${current_path}"
+		fi
+	done
+
+	echo "${app_path}"
 }
 
 __load_core_func
