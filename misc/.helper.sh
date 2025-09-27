@@ -313,7 +313,6 @@ find_app() {
 
     for current_path in "${common_install_paths[@]}"; do
         if [ -x "${current_path}" ]; then
-            msg_note "${name} found at ${current_path}"
             app_path="${current_path}"
             break
         fi
