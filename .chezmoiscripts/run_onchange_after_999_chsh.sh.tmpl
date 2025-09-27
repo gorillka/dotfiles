@@ -18,3 +18,7 @@ fi
 if [ "${SHELL: -3}" != "zsh" ]; then
 	chsh -s "${shell_path}"
 fi
+
+{{ if lookPath "zsh" -}}
+	source {{ .chezmoi.homeDir }}/.zshrc
+{{ end -}}
