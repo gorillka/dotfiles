@@ -3,7 +3,7 @@ source {{ .chezmoi.sourceDir }}/misc/.helper.sh
 
 set -eufo pipefail
 
-{{ $brews := list
+{{- $brews := list
  	"age"
     "bat"
     "btop"
@@ -34,9 +34,10 @@ set -eufo pipefail
 {{ end -}}
 
 BREW_PATH=$(find_app "brew")
+PATH=$PATH:${BREW_PATH%/brew}
 
 export HOMEBREW_NO_AUTO_UPDATE=1
-$BREW_PATH bundle --file=/dev/stdin <<EOF
+brew bundle --file=/dev/stdin <<EOF
 {{ range ($brews | sortAlpha | uniq) -}}
 brew "{{ . }}"
 {{ end -}}
