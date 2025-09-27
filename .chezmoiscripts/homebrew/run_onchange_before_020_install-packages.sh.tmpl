@@ -33,7 +33,7 @@ set -eufo pipefail
 	{{ $casks = mustAppend $casks "raycast" -}}
 {{ end -}}
 
-BREW_PATH=$(find_app "brew")
+find_app "brew"
 PATH=$PATH:${BREW_PATH%/brew}
 
 export HOMEBREW_NO_AUTO_UPDATE=1

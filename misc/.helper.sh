@@ -319,7 +319,7 @@ find_app() {
 		fi
 	done
 
-	echo "${app_path}"
+	${name}_PATH=${app_path}"
 }
 
 __load_core_func
