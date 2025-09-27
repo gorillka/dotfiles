@@ -46,13 +46,13 @@ export PATH=$PATH:"${BREW_PATH%/brew}"
 export HOMEBREW_NO_AUTO_UPDATE=1
 
 brew bundle --file=/dev/stdin <<EOF
-	{{ range ($taps | sortAlpha | uniq) -}}
-taps "{{ . }}"
-	{{ end -}}
-	{{ range ($brews | sortAlpha | uniq) -}}
+{{ range ($taps | sortAlpha | uniq) -}}
+tap "{{ . }}"
+{{ end -}}
+{{ range ($brews | sortAlpha | uniq) -}}
 brew "{{ . }}"
-	{{ end -}}
-	{{ range ($casks | sortAlpha | uniq) -}}
+{{ end -}}
+{{ range ($casks | sortAlpha | uniq) -}}
 cask "{{ . }}"
-	{{ end -}}
+{{ end -}}
 EOF
