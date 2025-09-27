@@ -312,15 +312,13 @@ find_app() {
     local app_path=""
 
     for current_path in "${common_install_paths[@]}"; do
-        msg_act "Checking for ${name} at ${current_path}"
         if [ -x "${current_path}" ]; then
             msg_note "${name} found at ${current_path}"
             app_path="${current_path}"
-            break  # Зупиняємо цикл після знаходження
+            break
         fi
     done
 
-    # Виводимо шлях або порожній рядок, якщо не знайдено
     echo "${app_path}"
 }
 
