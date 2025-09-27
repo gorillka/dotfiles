@@ -3,7 +3,10 @@ source {{ .chezmoi.sourceDir }}/misc/.helper.sh
 
 set -eufo pipefail
 
-{{- $brews := list
+{{- $taps := list
+-}}
+
+{{ $brews := list
  	"age"
     "bat"
     "btop"
@@ -13,16 +16,20 @@ set -eufo pipefail
     "ripgrep"
     "tmux"
     "lazygit"
-    "neovim"
     "oh-my-posh"
     "zsh"
+	"zoxide"
 -}}
 {{ if eq .chezmoi.os "darwin" -}}
-	{{ $brews = concat $brews (list "mas" "ffmpeg" "git" "git-lfs" "gnu-units" "gnupg") }}
+	{{ $brews = concat $brews (list "mas" "ffmpeg" "git" "git-lfs" "gnu-units" "gnupg" "neovim" "luarocks") }}
 {{ end -}}
 
 {{ if .dockerSupported -}}
 	{{ $brews = concat $brews (list "docker" "docker-compose") }}
+{{ end -}}
+
+{{ if .neovimSupported -}}
+	{{ $brews = concat $brews (list "neovim") }}
 {{ end -}}
 
 {{ $casks := list }}
@@ -33,15 +40,19 @@ set -eufo pipefail
 	{{ $casks = mustAppend $casks "raycast" -}}
 {{ end -}}
 
-BREW_PATH=$(find_app "brew")
-PATH=$PATH:"${BREW_PATH%/brew}"
+export BREW_PATH=$(find_app "brew")
+export PATH=$PATH:"${BREW_PATH%/brew}"
 
 export HOMEBREW_NO_AUTO_UPDATE=1
+
 brew bundle --file=/dev/stdin <<EOF
-{{ range ($brews | sortAlpha | uniq) -}}
+	{{ range ($taps | sortAlpha | uniq) -}}
+taps "{{ . }}"
+	{{ end -}}
+	{{ range ($brews | sortAlpha | uniq) -}}
 brew "{{ . }}"
-{{ end -}}
-{{ range ($casks | sortAlpha | uniq) -}}
+	{{ end -}}
+	{{ range ($casks | sortAlpha | uniq) -}}
 cask "{{ . }}"
-{{ end -}}
+	{{ end -}}
 EOF

@@ -6,6 +6,7 @@
 {{- $kvm := false -}}{{/* true if this machine is Proxmox VM */}}
 {{- $lxc := false -}}{{/* true if this machine is Proxmox LXC */}}
 {{- $dockerSupported := false -}}
+{{- $neovimSupported := true -}}
 {{- "" -}}
 
 {{- $osID := .chezmoi.os -}}
@@ -40,6 +41,7 @@
         {{- $kvm = (eq $containerType "VM") -}}
         {{- $lxc = (eq $containerType "LXC") -}}
         {{- $dockerSupported := promptBoolOnce . "dockerSupported" "Do you want to install Docker" false -}}
+        {{- $neovimSupported := promptBoolOnce . "neovimSupported" "Do you want to install Neovim" false -}}
     {{- end -}}
     {{- $personal = (eq $machineType "home") -}}
     {{- $work = (eq $machineType "work") -}}
@@ -103,6 +105,7 @@ data:
   lxc: {{ $lxc }}
 
   dockerSupported: {{ $dockerSupported }}
+  neovimSupported: {{ $neovimSupported}}
 
   zshPlugins:
     - per-directory-history
