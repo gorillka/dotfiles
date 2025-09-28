@@ -1,0 +1,13 @@
+{
+    "agent": {
+        "default_model": {
+            "provider": "ollama",
+            "model": "qwen3:8b"
+        },
+        "inline_assistant_model": {
+            "provider": "ollama",
+            "model": "qwen3:8b"
+        }
+    },
+    "theme": "Tokyo Night Storm"
+}
