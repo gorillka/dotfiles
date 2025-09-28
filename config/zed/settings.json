@@ -1,13 +1,22 @@
 {
-    "agent": {
-        "default_model": {
-            "provider": "ollama",
-            "model": "qwen3:8b"
-        },
-        "inline_assistant_model": {
-            "provider": "ollama",
-            "model": "qwen3:8b"
-        }
+  "agent": {
+    "default_model": {
+      "provider": "ollama",
+      "model": "qwen3:8b"
     },
-    "theme": "Tokyo Night Storm"
+    "inline_assistant_model": {
+      "provider": "ollama",
+      "model": "qwen3:8b"
+    }
+  },
+  "theme": "Tokyo Night Storm",
+  "base_keymap": "VSCode",
+  "buffer_font_family": "JetBrainsMono Nerd Font Mono",
+  "buffer_font_size": 14,
+  "cursor_blink": true,
+  "cursor_shape": "block",
+  "relative_line_numbers": true,
+  "scrollbar": {
+    "show": "never"
+  }
 }
