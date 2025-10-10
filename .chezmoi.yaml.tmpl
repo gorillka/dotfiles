@@ -40,8 +40,8 @@
         {{- $containerType := promptChoiceOnce . "containerType" "Choose Proxmox container type" $containerTypes -}}
         {{- $kvm = (eq $containerType "VM") -}}
         {{- $lxc = (eq $containerType "LXC") -}}
-        {{- $dockerSupported := promptBoolOnce . "dockerSupported" "Do you want to install Docker" false -}}
-        {{- $neovimSupported := promptBoolOnce . "neovimSupported" "Do you want to install Neovim" false -}}
+        {{- $dockerSupported = promptBoolOnce . "dockerSupported" "Do you want to install Docker" false -}}
+        {{- $neovimSupported = promptBoolOnce . "neovimSupported" "Do you want to install Neovim" false -}}
     {{- end -}}
     {{- $personal = (eq $machineType "home") -}}
     {{- $work = (eq $machineType "work") -}}
