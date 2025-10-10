@@ -45,7 +45,6 @@ key.txt.age
 **/.DS_Store
 ~/.config/nvim/lazy-lock.json
 ~/.config/zed/**
-config/**
 
 {{ if not .homebrewSupported }}
 .chezmoiscripts/homebrew/**

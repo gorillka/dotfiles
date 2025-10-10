@@ -1,4 +1,5 @@
 {
+  "vim_mode": false,
   "agent": {
     "default_model": {
       "provider": "ollama",
@@ -14,9 +15,6 @@
   "buffer_font_family": "JetBrainsMono Nerd Font Mono",
   "buffer_font_size": 14,
   "cursor_blink": true,
-  "cursor_shape": "block",
-  "relative_line_numbers": true,
-  "scrollbar": {
-    "show": "never"
-  }
+  "cursor_shape": "block"
+  // "relative_line_numbers": true,
 }
